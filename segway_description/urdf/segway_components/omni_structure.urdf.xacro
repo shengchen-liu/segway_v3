@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!--
+Software License Agreement (BSD)
+
+\file      omni_structure.urdf.xacro
+\authors   Patrick Hussey
+\copyright Copyright (c) 2015, Stanley Innovation, Inc., All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that
+the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and the
+   following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the
+   following disclaimer in the documentation and/or other materials provided with the distribution.
+ * Neither the name of Stanley Innovation, Inc. nor the names of its contributors may be used to endorse or promote
+   products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WAR-
+RANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, IN-
+DIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="omni_structure">
+
+	<xacro:macro name="omni_structure" params="parent *origin">
+        <joint name="omni_structure_joint" type="fixed">
+            <xacro:insert_block name="origin" />
+            <parent link="${parent}" />
+            <child link="omni_structure_link" />
+        </joint>
+        
+	    <link name="omni_structure_link">
+			<inertial>
+				<mass value="21.718705" />
+				<origin xyz="0 0 0" />
+				<inertia  ixx="0.717807"   ixy="0.000001"  ixz="0.325590" 
+				          iyx="0.000001"   iyy="3.805669"  iyz="-0.000004" 
+				          izx ="0.325590"   izy="-0.000001" izz="4.240813" />
+			</inertial>
+			<visual>
+				<origin xyz="0 0 0" rpy="0 0 0" />
+				<geometry>
+					<mesh filename="package://segway_description/meshes/omni_structure.dae" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="0 0 0.0650875" rpy="0 0 0" />
+				<geometry>
+					<box size="1.22555 0.43213 0.130175"/>
+				</geometry>
+			</collision>
+		</link>
+    </xacro:macro>
+
+</robot>
