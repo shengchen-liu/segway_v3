@@ -1,6 +1,6 @@
 <package>
     <name>segway_ros</name>
-    <version>1.0.0</version>
+    <version>0.0.1</version>
     <description>Drivers and nodes related to Segway RMP</description>
     
     <maintainer email="RMP@stanleyinnovation.com">Stanley Innovation, Inc.</maintainer>
