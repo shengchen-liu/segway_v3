@@ -1,6 +1,6 @@
 <package>
 	<name>segway_navigation_apps</name>
-	<version>1.0.0</version>
+	<version>0.0.1</version>
 	<description>Autonomous mapping and navigation demos for Segway RMP V3 platforms</description>
 
     <maintainer email="RMP@stanleyinnovation.com">Stanley Innovation, Inc.</maintainer>
