@@ -48,13 +48,15 @@ arising out of or based upon:
 
  \Platform: Linux/ROS Indigo
 --------------------------------------------------------------------"""
+from utils import *
 from system_defines import *
 from segway_msgs.msg import *
 from sensor_msgs.msg import Joy
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool,Float64
 import rospy
 import sys
+import math
 
 """
 mapping for controller order is dtz_request, powerdown_request, standby_request, tractor_request, balance_request, audio_request, 
@@ -122,12 +124,14 @@ class SegwayTeleop:
         self.send_cmd_none = False
         self.no_motion_commands = True
         self.last_motion_command_time = rospy.Time.now().to_sec() - 1.0
+        self.last_joy = rospy.Time.now().to_sec()
             
         self.cfg_cmd = ConfigCmd()
         self.cfg_pub = rospy.Publisher('/segway/gp_command', ConfigCmd, queue_size=10)
-        self.goalrecorder_pub = rospy.Publisher('/segway/teleop/record_pose',Bool, queue_size=10)
+        self.goalrecorder_pub = rospy.Publisher('/segway/record_pose',Bool, queue_size=10)
         
         self.motion_cmd = Twist()
+        self.limited_cmd = Twist()
         self.motion_pub = rospy.Publisher('/segway/teleop/cmd_vel', Twist, queue_size=10)
         self.override_pub = rospy.Publisher("/segway/manual_override/cmd_vel",Twist, queue_size=10)
 
@@ -140,8 +144,11 @@ class SegwayTeleop:
         rospy.Subscriber('/joy', Joy, self._segway_teleop)
         
     def _update_configuration_limits(self,config):
-        self.vel_limit_mps = config.vel_limit_mps
-        self.yaw_rate_limit_rps = config.yaw_rate_limit_rps
+        
+        self.vel_limit_mps = config.teleop_vel_limit_mps
+        self.yaw_rate_limit_rps = config.teleop_yaw_rate_limit_rps
+        self.accel_lim = config.teleop_accel_limit_mps2
+        self.yaw_accel_lim = config.teleop_yaw_accel_limit_rps2
         self.config_updated = True
         
     def _parse_joy_input(self,joyMessage):
@@ -232,17 +239,32 @@ class SegwayTeleop:
             if self.button_state[MAP_DEADMAN_IDX]:
                 self.motion_cmd.linear.x =  (self.axis_value[MAP_TWIST_LIN_X_IDX] * self.vel_limit_mps)
                 self.motion_cmd.linear.y =  (self.axis_value[MAP_TWIST_LIN_Y_IDX] * self.vel_limit_mps)
-                self.motion_cmd.angular.z = (self.axis_value[MAP_TWIST_ANG_Z_IDX] * self.yaw_rate_limit_rps)
+                self.motion_cmd.angular.z = (self.axis_value[MAP_TWIST_ANG_Z_IDX] * self.yaw_rate_limit_rps)                
                 self.last_motion_command_time = rospy.Time.now().to_sec()
             else:
                 self.motion_cmd.linear.x = 0.0
                 self.motion_cmd.linear.y = 0.0
                 self.motion_cmd.angular.z = 0.0
+            
+            dt = rospy.Time.now().to_sec() - self.last_joy
+            
+            self.limited_cmd.linear.x = slew_limit(self.motion_cmd.linear.x,
+                                                   self.limited_cmd.linear.x,
+                                                   self.accel_lim, dt)
+            self.limited_cmd.linear.y = slew_limit(self.motion_cmd.linear.y,
+                                                   self.limited_cmd.linear.y,
+                                                   self.accel_lim, dt)
+            self.limited_cmd.angular.z = slew_limit(self.motion_cmd.angular.z,
+                                                   self.limited_cmd.angular.z,
+                                                   self.yaw_accel_lim, dt)
+
+            if ((rospy.Time.now().to_sec() - self.last_motion_command_time) < 2.0):
+ 
                 
-            if ((rospy.Time.now().to_sec() - self.last_motion_command_time) < 0.1):
-                self.motion_pub.publish(self.motion_cmd)
+                self.motion_pub.publish(self.limited_cmd)
                 
                 if self.button_state[MAP_DEADMAN_IDX] and self.button_state[MAP_MAN_OVVRD_IDX]:
                     self.override_pub.publish(self.motion_cmd)
+        self.last_joy = rospy.Time.now().to_sec()
 
     

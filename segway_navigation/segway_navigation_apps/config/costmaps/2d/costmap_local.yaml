@@ -4,6 +4,9 @@ local_costmap:
   track_unknown_space:        false
   width:                      3.0
   height:                     3.0
+  origin_x:                   1.5
+  origin_y:                   1.5
+  
   
   plugins:
     - {name: obstacles_costmap2d,       type: "costmap_2d::ObstacleLayer"}

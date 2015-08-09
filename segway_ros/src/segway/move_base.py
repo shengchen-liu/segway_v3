@@ -53,11 +53,13 @@ import actionlib
 from system_defines import *
 from actionlib_msgs.msg import *
 from segway_msgs.msg import *
-from geometry_msgs.msg import Pose, PoseStamped, PoseWithCovarianceStamped, Point, Quaternion, Twist
+from geometry_msgs.msg import Pose, PoseStamped, PointStamped, PoseWithCovarianceStamped, Point, Quaternion, Twist
 from move_base_msgs.msg import *
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, UInt32
 from math import pow, sqrt
 from system_defines import *
+from visualization_msgs.msg import MarkerArray,Marker
+import rospkg
 
 class SegwayMoveBase():
     def __init__(self):
@@ -73,6 +75,18 @@ class SegwayMoveBase():
         self.base_frame = rospy.get_param("~base_frame", 'segway/base_link')
         self.goal_timeout_sec = rospy.get_param("~goal_timeout_sec", 300)
         self.initial_state = rospy.get_param("~platform_mode", "tractor")
+        self.load_waypoints = rospy.get_param("~load_waypoints", False)
+        self.waypoint_dwell_s= rospy.get_param("~waypoints_dwell_time", 5.0)
+        
+        self.marker_array_msg = MarkerArray()
+        self.max_markers = 100
+        self._init_markers()
+        self.marker_array_pub = rospy.Publisher('/segway/waypoints',MarkerArray,queue_size=10)
+        
+
+        
+        rospack = rospkg.RosPack()
+        self.goals_filename = rospack.get_path('segway_navigation_apps') + "/goals/" + rospy.get_param("~goalfile", "segway_goals")  + ".txt"
         
         """
         Goal state return values
@@ -81,7 +95,16 @@ class SegwayMoveBase():
                        'SUCCEEDED', 'ABORTED', 'REJECTED',
                        'PREEMPTING', 'RECALLING', 'RECALLED',
                        'LOST']
-                       
+        self.waypoints = []
+        self.present_waypoint = 0
+        if (True == self.load_waypoints):
+            goalfile = open(self.goals_filename,'r')
+            for line in goalfile:
+                goal = [float(i) for i in line.strip('\n').split(',')]
+                pose = Pose(Point(goal[0], goal[1], goal[2]), Quaternion(goal[3],goal[4],goal[5],goal[6]))
+                self._append_waypoint_pose(pose)
+            goalfile.close()
+               
         """
         Variables to keep track of success rate, running time,
         and distance traveled
@@ -92,6 +115,7 @@ class SegwayMoveBase():
         self.start_time = rospy.Time.now()
         self.running_time = 0
         self.rmp_operational_state = 0
+        self.run_waypoints = False
         initial_request_states = dict({"tractor":TRACTOR_REQUEST,"balance":TRACTOR_REQUEST})
         
         try:
@@ -109,7 +133,9 @@ class SegwayMoveBase():
         rospy.Subscriber("/segway/feedback/propulsion", Propulsion, self._handle_low_propulsion_power)
         rospy.Subscriber("/move_base_simple/goal", PoseStamped,  self._simple_goal_cb)
         rospy.Subscriber('/segway/teleop/abort_navigation',Bool,self._shutdown)
-        rospy.Subscriber('/initialpose',PoseWithCovarianceStamped)
+        rospy.Subscriber('/clicked_point',PointStamped,self._add_waypoint)
+        rospy.Subscriber('/segway/teleop/record_pose',Bool,self._add_waypoint_pose)
+        rospy.Subscriber('/segway/waypoint_cmd',UInt32,self._process_waypoint_cmd)
         self.simple_goal_pub = rospy.Publisher('/segway_move_base/goal', MoveBaseActionGoal, queue_size=10)
         self.new_goal = MoveBaseActionGoal()
         
@@ -175,8 +201,133 @@ class SegwayMoveBase():
         self.move_base_server = actionlib.SimpleActionServer("segway_move_base", MoveBaseAction,execute_cb=self._execute_goal, auto_start = False)
         self.move_base_server.register_preempt_callback(self._preempt_cb)
         self.move_base_server.start()
+        
         rospy.loginfo("Segway move base server started")
+        self.waypoint_is_executing = False
+        self._run_waypoints()
 
+    def _run_waypoints(self):
+        rospy.sleep(5)
+        r = rospy.Rate(10)
+        while not rospy.is_shutdown():
+            if ((len(self.waypoints) > 0) and (self.present_waypoint < len(self.waypoints)) and (False == self.waypoint_is_executing) and (True == self.run_waypoints)):
+                self.waypoint_is_executing = True
+                goal = PoseStamped()
+                goal.header.stamp = rospy.Time.now()
+                goal.header.frame_id = self.global_frame
+                goal.pose = self.waypoints[self.present_waypoint] 
+                self._simple_goal_cb(goal)
+                
+            self.marker_array_pub.publish(self.marker_array_msg)
+            r.sleep()
+
+    def _init_markers(self):
+        self.marker_idx = 0
+        for i in range(self.max_markers):
+            marker = Marker()
+            marker.header.frame_id = self.global_frame
+            marker.id = self.marker_idx
+            marker.type = 2
+            marker.action = 2
+            marker.pose = Pose()
+            marker.color.r = 0.0
+            marker.color.g = 0.0
+            marker.color.b = 0.0
+            marker.color.a = 0.0
+            marker.scale.x = 0.1
+            marker.scale.y = 0.1
+            marker.scale.z = 0.1
+            marker.frame_locked = False
+            marker.ns = "Goal-%u"%i
+            self.marker_array_msg.markers.append(marker)            
+
+    def _process_waypoint_cmd(self,cmd):
+        cmd = cmd.data
+        rospy.loginfo("cmd rcvd %u"%cmd)
+        if (1<<0 == cmd):
+            self._add_waypoint_pose()
+        elif (1<<1 == cmd):
+            self.run_waypoints = True
+        elif (1<<2 == cmd):
+            self.run_waypoints = False
+            if (True == self.waypoint_is_executing):
+                self.move_base_client.cancel_goal()
+                self.move_base_server.set_aborted(None, "User stopped waypoints")
+                rospy.loginfo("User commanded waypoint record to stop")
+        elif (1<<3 == cmd):
+            self.run_waypoints = False
+            self.present_waypoint = 0
+            if (True == self.waypoint_is_executing):
+                self.move_base_client.cancel_goal()
+                self.move_base_server.set_aborted(None, "User reset waypoint record")
+                rospy.loginfo("User commanded waypoint record to reset")
+            for i in range(self.max_markers):
+                self.marker_array_msg.markers[i].color.r = 1.0
+                self.marker_array_msg.markers[i].color.g = 0.0
+        elif (1<<4 == cmd):
+            self.waypoints = []
+            self._init_markers()
+            self.present_waypoint = 0
+            
+        elif (1<<5 == cmd):
+            self.waypoints = []
+            self._init_markers()
+            self.present_waypoint = 0
+            
+            goalfile = open(self.goals_filename,'r')
+            for line in goalfile:
+                goal = [float(i) for i in line.strip('\n').split(',')]
+                pose = Pose(Point(goal[0], goal[1], goal[2]), Quaternion(goal[3],goal[4],goal[5],goal[6]))
+                self._append_waypoint_pose(pose)
+            goalfile.close()
+        elif (1<<6 == cmd):
+            goalfile = open(self.goals_filename,'w')
+            for pose in self.waypoints:
+                goal  = "%.3f,"%pose.position.x
+                goal += "%.3f,"%pose.position.y
+                goal += "%.3f,"%pose.position.z
+                goal += "%.3f,"%pose.orientation.x
+                goal += "%.3f,"%pose.orientation.y
+                goal += "%.3f,"%pose.orientation.z
+                goal += "%.3f\n"%pose.orientation.w
+                goalfile.write(goal)
+            goalfile.close()
+            rospy.loginfo("Waypoint Record Saved: %s"%self.goals_filename)                
+        
+        
+    def _add_waypoint(self,point):
+        pose = Pose(point.point,Quaternion(0.0,0.0,0.0,1.0)) 
+        self._append_waypoint_pose(pose)    
+
+    def _add_waypoint_pose(self):
+        current_pose = self._get_current_pose()
+        
+        if (None != current_pose):
+            self._append_waypoint_pose(current_pose.pose.pose)
+        else:
+            rospy.logerror("Invalid waypoint pose")
+    
+    def _append_waypoint_pose(self,pose):
+        print pose
+        self.waypoints.append(pose)
+        marker = Marker()
+        marker.header.frame_id = self.global_frame
+        marker.id = self.marker_idx
+        marker.type = 2
+        marker.action = 0
+        marker.pose = pose
+        marker.color.r = 1.0
+        marker.color.g = 0.0
+        marker.color.b = 0.0
+        marker.color.a = 1.0
+        marker.scale.x = 0.1
+        marker.scale.y = 0.1
+        marker.scale.z = 0.1
+        marker.frame_locked = False
+        marker.ns = "Goal-%u"%self.marker_idx
+        self.marker_array_msg.markers[self.marker_idx] = marker 
+        self.marker_idx+=1
+                    
 
     def _execute_goal(self,goal):
                 
@@ -264,6 +415,15 @@ class SegwayMoveBase():
                             self.last_pose.pose.pose.position.y, 2))
         self.last_pose = new_pose
         
+        if (True == self.waypoint_is_executing):
+            self.marker_array_msg.markers[self.present_waypoint].color.g = 1.0
+            self.marker_array_msg.markers[self.present_waypoint].color.r = 0.0
+            self.present_waypoint+=1
+            self.waypoint_is_executing = False
+
+            sleep_time = self.waypoint_dwell_s
+        sleep_time = 0
+
         """
         How long have we been running?
         """
@@ -278,6 +438,9 @@ class SegwayMoveBase():
                       str(100 * self.n_successes/self.n_goals) + "%")
         rospy.loginfo("Running time: " + str(trunc(self.running_time, 1)) + 
                       " Total Distance: " + str(trunc(self.distance_traveled, 1)) + " m")
+                      
+        if (sleep_time > 0):
+            rospy.sleep(sleep_time)
             
     def _simple_goal_cb(self, simple_goal):
         
@@ -286,7 +449,6 @@ class SegwayMoveBase():
         sometimes the user can have the wrong frame selected in RVIZ for the fixed frame
         It should usually be /map or /odom depending on how the user is running the navigation stack
         """
-        rospy.loginfo('got here-----------------------------------------------------------------------------')
         if (simple_goal.header.frame_id != self.global_frame) and (('/'+simple_goal.header.frame_id) != self.global_frame):
             rospy.logerr('MoveBaseSimpleGoal is not in correct frame!!!')
             rospy.logerr('expected global frame %(1)s but got %(2)s'%{'1':self.global_frame,'2':simple_goal.header.frame_id})

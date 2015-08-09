@@ -54,6 +54,23 @@ import crc16
 import array
 from system_defines import *
 
+"""
+slew limit funtion to limit the maximum rate of change
+"""
+def slew_limit(signal_in,signal_out,max_rate,dt):
+    if (0 == dt):
+        return
+    requested_rate = (signal_in - signal_out)/dt
+                
+    if (requested_rate > max_rate): 
+        signal_out += max_rate * dt
+    elif (requested_rate >= -max_rate): 
+        signal_out = signal_in
+    else: 
+        signal_out += -max_rate * dt
+    
+    return signal_out
+
 
 """
 Make a 16-bit value from two 8-bit values

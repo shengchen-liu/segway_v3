@@ -693,7 +693,13 @@ class RMP_Configuration:
         self._MsgPub = rospy.Publisher('/segway/feedback/configuration', Configuration, queue_size=10)
         self._MsgData.header.frame_id = ''
         self._seq = 0 
-        self.configuration_feedback = [0]*16   
+        self.configuration_feedback = [0]*16
+        
+    def SetTeleopConfig(self,data):
+        self._MsgData.teleop_vel_limit_mps = data[0]
+        self._MsgData.teleop_accel_limit_mps2 = data[1]
+        self._MsgData.teleop_yaw_rate_limit_rps = data[2]
+        self._MsgData.teleop_yaw_accel_limit_rps2 = data[3]           
         
     def parse(self,data):
         global wheel_circum

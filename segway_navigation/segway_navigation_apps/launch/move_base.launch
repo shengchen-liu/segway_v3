@@ -10,7 +10,7 @@
         <!-- Remap into correct namespace for mux -->
         <remap from="cmd_vel" to="/segway/navigation/cmd_vel" />
         
-        <param name="base_global_planner" value="navfn/NavfnROS"/>
+        <param name="base_global_planner" value="global_planner/GlobalPlanner"/>
         <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" if="$(arg use_dwa)"/>
         <param name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS" unless="$(arg use_dwa)"/>
         
@@ -21,6 +21,8 @@
 		<remap from="move_base/status" to="move_base_navi/status" />
 		<remap from="move_base/cancel" to="move_base_navi/cancel" />
 		<remap from="move_base_simple/goal" to="move_base_navi_simple/goal"/>
+		<remap from="/odom" to="/segway/feedback/wheel_odometry" if="$(optenv SEGWAY_USE_PLATFORM_ODOMETRY true)" />
+		<remap from="/odom" to="/segway/odometry/local_filtered" unless="$(optenv SEGWAY_USE_PLATFORM_ODOMETRY true)" />
 
         <!-- Load common configuration files -->
         <rosparam file="$(find segway_navigation_apps)/config/$(arg robot_name)/base_planner_params.yaml" command="load" />
@@ -38,7 +40,7 @@
         <!-- Remap into correct namespace for mux -->
         <remap from="cmd_vel" to="/segway/navigation/cmd_vel" />
         
-        <param name="base_global_planner" value="navfn/NavfnROS"/>
+        <param name="base_global_planner" value="global_planner/GlobalPlanner"/>
         <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" if="$(arg use_dwa)"/>
         <param name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS" unless="$(arg use_dwa)"/>
         
@@ -49,6 +51,8 @@
 		<remap from="move_base/status" to="move_base_navi/status" />
 		<remap from="move_base/cancel" to="move_base_navi/cancel" />
 		<remap from="move_base_simple/goal" to="move_base_navi_simple/goal"/>
+		<remap from="/odom" to="/segway/feedback/wheel_odometry" if="$(optenv SEGWAY_USE_PLATFORM_ODOMETRY true)" />
+		<remap from="/odom" to="/segway/odometry/local_filtered" unless="$(optenv SEGWAY_USE_PLATFORM_ODOMETRY true)" />
 
         <!-- Load common configuration files -->
         <rosparam file="$(find segway_navigation_apps)/config/$(arg robot_name)/base_planner_params.yaml" command="load" />

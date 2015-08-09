@@ -38,35 +38,35 @@ ogain:                     3.0     #default 3.0
 lskip:                     0       #default 0
 
 # Minimum score for considering the outcome of the scan matching good
-minimumScore:              20.0    #default 0.0
+minimumScore:              50.0    #default 0.0
 
 # Odometry error in translation as a function of translation (rho/rho)
-srr:                       0.1     #default 0.1
+srr:                       0.2     #default 0.1
 
 # Odometry error in translation as a function of rotation (rho/theta)
-srt:                       0.2     #default 0.2
+srt:                       0.4     #default 0.2
 
 # Odometry error in rotation as a function of translation (theta/rho)
-str:                       0.1     #default 0.1
+str:                       0.2     #default 0.1
 
 # Odometry error in rotation as a function of rotation (theta/theta)
-stt:                       0.2     #default 0.2
+stt:                       0.4     #default 0.2
 
 # Process a scan each time the robot translates this far
-linearUpdate:              0.3     #default 1.0
+linearUpdate:              0.5     #default 1.0
 
 # Process a scan each time the robot rotates this far      
-angularUpdate:             0.5     #default 0.5
+angularUpdate:             0.15     #default 0.5
 
 # Process a scan if the last scan proccessed is older than the update time in seconds. 
 # A value less than zero will turn time based updates off 
-temporalUpdate:            2.0     #default -1.0
+temporalUpdate:            -1.0     #default -1.0
 
 # The neff based resampling threshold    
 resampleThreshold:         0.5     #default 0.5
 
 # Number of particles in the filter    
-particles:                 100     #default 30
+particles:                 60     #default 30
 
 # Translational sampling range for the likelihood
 llsamplerange:             0.01    #default 0.01
@@ -86,10 +86,10 @@ transform_publish_period:  0.05    #default 0.05
 occ_thresh:                0.25    #default 0.25
 
 #Initial map size
-xmin:                     -100.0   #default -100.0
-ymin:                     -100.0   #default -100.0
-xmax:                      100.0   #default 100.0
-ymax:                      100.0   #default 100.0
+xmin:                     -10.0   #default -100.0
+ymin:                     -10.0   #default -100.0
+xmax:                      10.0   #default 100.0
+ymax:                      10.0   #default 100.0
 
 # Processing parameters (resolution of the map)
 delta:                     0.05    #default 0.05

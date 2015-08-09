@@ -2,10 +2,6 @@ explore_costmap:
   global_frame:              /map
   rolling_window:            false
   track_unknown_space:       true
-  width:                     100.0
-  height:                    100.0
-  origin_x:                  -50.0
-  origin_y:                  -50.0
 
   explore_boundary:
     resize_to_boundary:    true

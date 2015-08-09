@@ -60,30 +60,18 @@ class SegwayWatchdog:
         """
         Initialize the UDP connection
         """
-        self.rmp_addr = (os.environ['SEGWAY_IP_ADDRESS'],6234)
         self._continue = True     
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.conn.setblocking(False)
-        self.conn.bind((os.environ['ROS_IP'],6234))
-        try:
-            self.conn.connect(self.rmp_addr)
-        except:
-            rospy.logerr("Could not initialize WD connection")
-            return
+        self.conn.bind(('',6234))
 
     def Receive(self):
-    
-        try:
-            self.conn.sendall('0')            
-        except:
-            pass
-        
         """
         Try receiving the data up to a maximum size. If it fails
         empty the data
         """
         try:
-            data = self.conn.recv(8)
+            data = self.conn.recv(4)
         except:
             data = []
             
@@ -98,7 +86,6 @@ class SegwayWatchdog:
                 sys.exit(0)
 
     def Close(self):
-        self.conn.shutdown(socket.SHUT_RDWR)
         self.conn.close()       
         
     

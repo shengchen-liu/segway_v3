@@ -386,8 +386,24 @@ class SegwayDriver:
         rospy.loginfo("balance_mode_enabled:     %u"%config.balance_mode_enabled)
         rospy.loginfo("balance_gain_schedule:    %u"%config.balace_gains)
         rospy.loginfo("vel_ctl_input_filter:     %u"%config.vel_ctl_input_filter)
-        rospy.loginfo("yaw_ctl_input_filter:     %u"%config.yaw_ctl_input_filter)      
-
+        rospy.loginfo("yaw_ctl_input_filter:     %u"%config.yaw_ctl_input_filter)
+             
+        """
+        The teleop limits are always the minimum of the actual machine limit and the ones set for teleop
+        """
+        config.teleop_vel_limit_mps = minimum_f(config.teleop_vel_limit_mps, config.vel_limit_mps)
+        config.teleop_accel_limit_mps2 = minimum_f(config.teleop_accel_limit_mps2, config.accel_limit_mps2)
+        config.teleop_yaw_rate_limit_rps = minimum_f(config.teleop_yaw_rate_limit_rps, config.yaw_rate_limit_rps)
+        config.teleop_yaw_accel_limit_rps2 = minimum_f(config.teleop_yaw_accel_limit_rps2, config.teleop_yaw_accel_limit_rps2)      
+        
+        """
+        Set the teleop configuration in the feedback
+        """
+        self.rmp_data.config_param.SetTeleopConfig([config.teleop_vel_limit_mps,
+                                                    config.teleop_accel_limit_mps2,
+                                                    config.teleop_yaw_rate_limit_rps,
+                                                    config.teleop_yaw_accel_limit_rps2]) 
+        
         """
         Check and see if we need to store the parameters in NVM before we try, although the NVM is F-RAM
         with unlimited read/write, uneccessarily setting the parameters only introduces risk for error 
@@ -405,7 +421,7 @@ class SegwayDriver:
             Just update the peak torque as it is not a persistant command
             """
             
-            if ((1<<13) == ((1<<13)&level)):
+            if ((1<<17) == ((1<<17)&level)):
                 rospy.loginfo("level is %u"%level)
                 cmd = [GENERAL_PURPOSE_CMD_ID,
                        [GENERAL_PURPOSE_CMD_SET_TORQUE_LIMIT,
