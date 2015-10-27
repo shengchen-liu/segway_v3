@@ -21,8 +21,7 @@
 		<remap from="move_base/status" to="move_base_navi/status" />
 		<remap from="move_base/cancel" to="move_base_navi/cancel" />
 		<remap from="move_base_simple/goal" to="move_base_navi_simple/goal"/>
-		<remap from="/odom" to="/segway/feedback/wheel_odometry" if="$(optenv SEGWAY_USE_PLATFORM_ODOMETRY true)" />
-		<remap from="/odom" to="/segway/odometry/local_filtered" unless="$(optenv SEGWAY_USE_PLATFORM_ODOMETRY true)" />
+		<remap from="/odom" to="/segway/odometry/local_filtered" />
 
         <!-- Load common configuration files -->
         <rosparam file="$(find segway_navigation_apps)/config/$(arg robot_name)/base_planner_params.yaml" command="load" />
@@ -51,8 +50,7 @@
 		<remap from="move_base/status" to="move_base_navi/status" />
 		<remap from="move_base/cancel" to="move_base_navi/cancel" />
 		<remap from="move_base_simple/goal" to="move_base_navi_simple/goal"/>
-		<remap from="/odom" to="/segway/feedback/wheel_odometry" if="$(optenv SEGWAY_USE_PLATFORM_ODOMETRY true)" />
-		<remap from="/odom" to="/segway/odometry/local_filtered" unless="$(optenv SEGWAY_USE_PLATFORM_ODOMETRY true)" />
+		<remap from="/odom" to="/segway/odometry/local_filtered" />
 
         <!-- Load common configuration files -->
         <rosparam file="$(find segway_navigation_apps)/config/$(arg robot_name)/base_planner_params.yaml" command="load" />

@@ -244,13 +244,13 @@ class AHRS_Packet(object):
         
         self.publish_data = False
         self._MsgData = Imu()
-        self._MsgPub = rospy.Publisher('/segway/feedback/microstrain_imu', Imu, queue_size=10)
-        self._MsgData.header.frame_id = '/segway/microstrain_imu_frame'
+        self._MsgPub = rospy.Publisher('/segway/feedback/ext_imu', Imu, queue_size=10)
+        self._MsgData.header.frame_id = '/segway/ext_imu_frame'
         self._seq = 0
         
         self._MagMsgData = MagneticField()
-        self._MagMsgPub = rospy.Publisher('/segway/feedback/microstrain_mag_feild', MagneticField, queue_size=10)
-        self._MagMsgData.header.frame_id = '/segway/microstrain_imu_frame'
+        self._MagMsgPub = rospy.Publisher('/segway/feedback/ext_mag_feild', MagneticField, queue_size=10)
+        self._MagMsgData.header.frame_id = '/segway/ext_imu_frame'
         self._Magseq = 0  
         
 
@@ -347,12 +347,12 @@ class GPS_Packet(object):
         
         self._HVMsgData = NavSatFix()
         self._HVMsgPub = rospy.Publisher('/segway/feedback/gps/fix_3d', NavSatFix, queue_size=10)
-        self._HVMsgData.header.frame_id = '/segway/gps_rcvr_frame'
+        self._HVMsgData.header.frame_id = '/segway/gps_frame'
         self._HVMsgData.status.service = NavSatStatus.SERVICE_GPS
         
         self._HMsgData = NavSatFix()
         self._HMsgPub = rospy.Publisher('/segway/feedback/gps/fix_2d', NavSatFix, queue_size=10)
-        self._HMsgData.header.frame_id = '/segway/gps_rcvr_frame'
+        self._HMsgData.header.frame_id = '/segway/gps_frame'
         self._HMsgData.status.service = NavSatStatus.SERVICE_GPS
         self._seq = 0
         
@@ -497,13 +497,13 @@ class RMP_IMU(object):
     def __init__(self):
         self.status = 0
         self.errors = 0
-        if ("true" == os.environ["SEGWAY_HAS_MICROSTRAIN_3DM_GX3_35"]):
+        imu_src = rospy.get_param('~ext_imu_src',"none")
+        if ("3dm_gx3" == imu_src):
             self.ahrs = AHRS_Packet()
-        if ("true" == os.environ["SEGWAY_HAS_MICROSTRAIN_3DM_GX3_35"]):
             self.gps  = GPS_Packet()
-        if ("true" == os.environ["SEGWAY_HAS_CH_UM7"]):
+        elif ("um7_imu" == imu_src):
             self._um7_sub = rospy.Subscriber('/um7/data',Imu,self.ExternalImuCallback)
-            self._um7_pub = rospy.Publisher('/segway/feedback/um7_imu', Imu, queue_size=10)
+            self._um7_pub = rospy.Publisher('/segway/feedback/ext_imu', Imu, queue_size=10)
             self._um7_data = Imu()
         if (True == has_segway_bsa):
             self.bsa = BSA_Packet()
@@ -544,12 +544,12 @@ class RMP_IMU(object):
 
 class RMP_Dynamics:
     def __init__(self):
-        self._publish_tf = rospy.get_param('~publish_tf',True)
+        self._use_platform_odometry = rospy.get_param('~use_platform_odometry',False)
         self._MsgData = Dynamics()
         self._MsgPub = rospy.Publisher('/segway/feedback/dynamics', Dynamics, queue_size=10)
         self._jointStatePub = rospy.Publisher('rmp_joint_states', JointState, queue_size=10)
         self._jointStateMsg = JointState()
-        rospy.Subscriber('/segway/odometry/local_filtered', Odometry, self._update_odom_yaw)
+        
         
         if 2 == num_wheels:
             names = ['left_wheel','right_wheel']
@@ -584,9 +584,16 @@ class RMP_Dynamics:
         self._jointStateMsg.header.frame_id = ''
 
         self._OdomData = Odometry()
-        self._OdomPub = rospy.Publisher('/segway/feedback/wheel_odometry', Odometry, queue_size=10)
+        if (False == self._use_platform_odometry):
+            self._OdomPub = rospy.Publisher('/segway/feedback/wheel_odometry', Odometry, queue_size=10)
+            rospy.Subscriber('/segway/odometry/local_filtered', Odometry, self._update_odom_yaw)
+        else:
+            self._OdomPub = rospy.Publisher('/segway/odometry/local_filtered', Odometry, queue_size=10)
+        
+        
         self._OdomData.header.frame_id = '/odom'
         self._OdomData.child_frame_id  = '/segway/base_link'
+        
         
         self._OdomData.pose.covariance = [0.00017,0.0,0.0,0.0,0.0,0.0,
                                           0.0,0.00017,0.0,0.0,0.0,0.0,
@@ -678,7 +685,7 @@ class RMP_Dynamics:
             self._OdomPub.publish(self._OdomData)
             self._MsgPub.publish(self._MsgData)
             self._jointStatePub.publish(self._jointStateMsg)
-            if (True == self._publish_tf):
+            if (True == self._use_platform_odometry):
                 br = tf.TransformBroadcaster()
                 br.sendTransform((x, y, z),
                                   rot,
@@ -688,46 +695,46 @@ class RMP_Dynamics:
             self._seq += 1  
 
 class RMP_Configuration:
-    def __init__(self):   
-        self._MsgData = Configuration()
-        self._MsgPub = rospy.Publisher('/segway/feedback/configuration', Configuration, queue_size=10)
-        self._MsgData.header.frame_id = ''
-        self._seq = 0 
-        self.configuration_feedback = [0]*16
-        
-    def SetTeleopConfig(self,data):
-        self._MsgData.teleop_vel_limit_mps = data[0]
-        self._MsgData.teleop_accel_limit_mps2 = data[1]
-        self._MsgData.teleop_yaw_rate_limit_rps = data[2]
-        self._MsgData.teleop_yaw_accel_limit_rps2 = data[3]           
-        
-    def parse(self,data):
-        global wheel_circum
-        self._MsgData.header.stamp = header_stamp
-        self._MsgData.header.seq = self._seq
-        
-        self.configuration_feedback = data
-        self._MsgData.vel_limit_mps = convert_u32_to_float(data[0])
-        self._MsgData.accel_limit_mps2 = convert_u32_to_float(data[1])
-        self._MsgData.decel_limit_mps2 = convert_u32_to_float(data[2])
-        self._MsgData.dtz_decel_limit_mps2 = convert_u32_to_float(data[3])
-        self._MsgData.yaw_rate_limit_rps = convert_u32_to_float(data[4])
-        self._MsgData.yaw_accel_limit_rps2 = convert_u32_to_float(data[5])
-        self._MsgData.lateral_accel_limit_mps2 = convert_u32_to_float(data[6])
-        self._MsgData.tire_diameter_m = convert_u32_to_float(data[7])
-        wheel_circum = self._MsgData.tire_diameter_m * math.pi
-        self._MsgData.wheelbase_length_m = convert_u32_to_float(data[8])
-        self._MsgData.wheel_track_width_m = convert_u32_to_float(data[9])
-        self._MsgData.gear_ratio = convert_u32_to_float(data[10])
-        self._MsgData.config_bitmap = data[11]
-        self._MsgData.eth_ip_address = numToDottedQuad(data[12])
-        self._MsgData.eth_port_number = data[13]
-        self._MsgData.eth_subnet_mask = numToDottedQuad(data[14])
-        self._MsgData.eth_gateway = numToDottedQuad(data[15])
-        
-        if not rospy.is_shutdown():
-            self._MsgPub.publish(self._MsgData)
-            self._seq += 1
+	def __init__(self):   
+		self._MsgData = Configuration()
+		self._MsgPub = rospy.Publisher('/segway/feedback/configuration', Configuration, queue_size=10)
+		self._MsgData.header.frame_id = ''
+		self._seq = 0 
+		self.configuration_feedback = [0]*16
+
+	def SetTeleopConfig(self,data):
+		self._MsgData.teleop_vel_limit_mps = data[0]
+		self._MsgData.teleop_accel_limit_mps2 = data[1]
+		self._MsgData.teleop_yaw_rate_limit_rps = data[2]
+		self._MsgData.teleop_yaw_accel_limit_rps2 = data[3]           
+
+	def parse(self,data):
+		global wheel_circum
+		self._MsgData.header.stamp = header_stamp
+		self._MsgData.header.seq = self._seq
+
+		self.configuration_feedback = data
+		self._MsgData.vel_limit_mps = convert_u32_to_float(data[0])
+		self._MsgData.accel_limit_mps2 = convert_u32_to_float(data[1])
+		self._MsgData.decel_limit_mps2 = convert_u32_to_float(data[2])
+		self._MsgData.dtz_decel_limit_mps2 = convert_u32_to_float(data[3])
+		self._MsgData.yaw_rate_limit_rps = convert_u32_to_float(data[4])
+		self._MsgData.yaw_accel_limit_rps2 = convert_u32_to_float(data[5])
+		self._MsgData.lateral_accel_limit_mps2 = convert_u32_to_float(data[6])
+		self._MsgData.tire_diameter_m = convert_u32_to_float(data[7])
+		wheel_circum = self._MsgData.tire_diameter_m * math.pi
+		self._MsgData.wheelbase_length_m = convert_u32_to_float(data[8])
+		self._MsgData.wheel_track_width_m = convert_u32_to_float(data[9])
+		self._MsgData.gear_ratio = convert_u32_to_float(data[10])
+		self._MsgData.config_bitmap = data[11]
+		self._MsgData.eth_ip_address = numToDottedQuad(data[12])
+		self._MsgData.eth_port_number = data[13]
+		self._MsgData.eth_subnet_mask = numToDottedQuad(data[14])
+		self._MsgData.eth_gateway = numToDottedQuad(data[15])
+
+		if not rospy.is_shutdown():
+			self._MsgPub.publish(self._MsgData)
+			self._seq += 1
 
 class RMP_DATA:
     def __init__(self):

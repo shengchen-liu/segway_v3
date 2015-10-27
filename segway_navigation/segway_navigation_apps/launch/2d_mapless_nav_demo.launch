@@ -17,5 +17,6 @@
     <!--- Run Move Base -->
     <include file="$(find segway_navigation_apps)/launch/move_base.launch" >
         <arg name="no_static_map" value="true"/>
+        <arg name="use_dwa" value="true"/>
     </include>
 </launch>
