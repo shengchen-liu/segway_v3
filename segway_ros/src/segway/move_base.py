@@ -517,11 +517,11 @@ class SegwayMoveBase():
         listener = tf.TransformListener()
         rospy.sleep(1.0)
         try:
-            listener.waitForTransform(self.base_frame, self.global_frame, rospy.Time(), rospy.Duration(1.0))
+            listener.waitForTransform(self.global_frame, self.base_frame, rospy.Time(), rospy.Duration(1.0))
         except:
             pass
         try:
-            (trans,rot) = listener.lookupTransform(self.base_frame, self.global_frame, rospy.Time(0))
+            (trans,rot) = listener.lookupTransform(self.global_frame, self.base_frame, rospy.Time(0))
         
             pose_parts = [0.0] * 7
             pose_parts[0]  = trans[0]
