@@ -33,25 +33,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         </joint>
         
 	    <link name="large_enclosure_link">
-			<inertial>
-				<mass value="19.50447" />
-				<origin xyz="0 0 0" />
-				<inertia  ixx="0.688884"   ixy="-0.006095"  ixz="-0.014408" 
-				          iyx="-0.006095"  iyy="2.269516"   iyz="0.001301" 
-				          izx="-0.014408"  izy="0.001301"   izz="2.263636" />
-			</inertial>
 			<visual>
-				<origin xyz="0 0 0" rpy="0 0 0" />
 				<geometry>
-					<mesh filename="package://segway_description/meshes/large_enclosure.dae" />
+					<mesh filename="package://segway_description/meshes/visual/large_enclosure.dae" />
 				</geometry>
 			</visual>
-			<collision>
-				<origin xyz="0 0 0.103137" rpy="0 0 0" />
-				<geometry>
-					<box size="0.9716 0.36685 0.206274"/>
-				</geometry>
-			</collision>
 		</link>
     </xacro:macro>
 

@@ -83,17 +83,26 @@ NUMBER_OF_AXIS_INPUTS = 3
 class SegwayTeleop:
     def __init__(self):
          
-        """
-        Subscribe to the configuration message
-        """
-        self.config_updated = False
-        rospy.Subscriber("/segway/feedback/configuration", Configuration, self._update_configuration_limits)
-        rospy.sleep(1.0)
+        self.is_sim = rospy.get_param('~sim',False)
         
-        if (False == self.config_updated):
-            rospy.logerr("Timed out waiting for RMP feedback topics make sure the driver is running")
-            sys.exit(0)
-            return
+        if (False == self.is_sim):
+        
+            """
+            Subscribe to the configuration message
+            """
+            self.config_updated = False
+            rospy.Subscriber("/segway/feedback/configuration", Configuration, self._update_configuration_limits)
+            rospy.sleep(1.0)
+            
+            if (False == self.config_updated):
+                rospy.logerr("Timed out waiting for RMP feedback topics make sure the driver is running")
+                sys.exit(0)
+                return
+        else:
+            self.vel_limit_mps = 1.5
+            self.yaw_rate_limit_rps = 1.0
+            self.accel_lim = 2.5
+            self.yaw_accel_lim = 3.2           
         
         default_ctrl_map = dict({'momentary':[[{'is_button':True,'index':4,'set_val':1}],
                                               [{'is_button':True,'index':8,'set_val':1}],
@@ -123,8 +132,8 @@ class SegwayTeleop:
 
         self.send_cmd_none = False
         self.no_motion_commands = True
-        self.last_motion_command_time = rospy.Time.now().to_sec() - 1.0
-        self.last_joy = rospy.Time.now().to_sec()
+        self.last_motion_command_time = 0.0
+        self.last_joy = rospy.get_time()
             
         self.cfg_cmd = ConfigCmd()
         self.cfg_pub = rospy.Publisher('/segway/gp_command', ConfigCmd, queue_size=10)
@@ -136,7 +145,7 @@ class SegwayTeleop:
         self.override_pub = rospy.Publisher("/segway/manual_override/cmd_vel",Twist, queue_size=10)
 
         rospy.sleep(1.0)
-        self.cfg_cmd.header.stamp = rospy.Time.now()
+        self.cfg_cmd.header.stamp = rospy.get_rostime()
         self.cfg_cmd.gp_cmd = 'GENERAL_PURPOSE_CMD_SET_AUDIO_COMMAND'
         self.cfg_cmd.gp_param = MOTOR_AUDIO_PLAY_ENTER_ALARM_SONG
         self.cfg_pub.publish(self.cfg_cmd)
@@ -226,12 +235,12 @@ class SegwayTeleop:
             self.cfg_cmd.gp_param = 0
             
         if ('GENERAL_PURPOSE_CMD_NONE' != self.cfg_cmd.gp_cmd):
-            self.cfg_cmd.header.stamp = rospy.Time.now()
+            self.cfg_cmd.header.stamp = rospy.get_rostime()
             self.cfg_pub.publish(self.cfg_cmd)
             self.cfg_cmd.header.seq
             self.send_cmd_none = True
         elif (True == self.send_cmd_none):
-            self.cfg_cmd.header.stamp = rospy.Time.now()
+            self.cfg_cmd.header.stamp = rospy.get_rostime()
             self.cfg_pub.publish(self.cfg_cmd)
             self.cfg_cmd.header.seq
             self.send_cmd_none = False
@@ -239,32 +248,42 @@ class SegwayTeleop:
             if self.button_state[MAP_DEADMAN_IDX]:
                 self.motion_cmd.linear.x =  (self.axis_value[MAP_TWIST_LIN_X_IDX] * self.vel_limit_mps)
                 self.motion_cmd.linear.y =  (self.axis_value[MAP_TWIST_LIN_Y_IDX] * self.vel_limit_mps)
-                self.motion_cmd.angular.z = (self.axis_value[MAP_TWIST_ANG_Z_IDX] * self.yaw_rate_limit_rps)                
-                self.last_motion_command_time = rospy.Time.now().to_sec()
+                self.motion_cmd.angular.z = (self.axis_value[MAP_TWIST_ANG_Z_IDX] * self.yaw_rate_limit_rps)
+                self.last_motion_command_time = rospy.get_time()
+              
             else:
                 self.motion_cmd.linear.x = 0.0
                 self.motion_cmd.linear.y = 0.0
                 self.motion_cmd.angular.z = 0.0
-            
-            dt = rospy.Time.now().to_sec() - self.last_joy
-            
-            self.limited_cmd.linear.x = slew_limit(self.motion_cmd.linear.x,
-                                                   self.limited_cmd.linear.x,
-                                                   self.accel_lim, dt)
-            self.limited_cmd.linear.y = slew_limit(self.motion_cmd.linear.y,
-                                                   self.limited_cmd.linear.y,
-                                                   self.accel_lim, dt)
-            self.limited_cmd.angular.z = slew_limit(self.motion_cmd.angular.z,
-                                                   self.limited_cmd.angular.z,
-                                                   self.yaw_accel_lim, dt)
 
-            if ((rospy.Time.now().to_sec() - self.last_motion_command_time) < 2.0):
- 
-                
-                self.motion_pub.publish(self.limited_cmd)
-                
-                if self.button_state[MAP_DEADMAN_IDX] and self.button_state[MAP_MAN_OVVRD_IDX]:
-                    self.override_pub.publish(self.motion_cmd)
-        self.last_joy = rospy.Time.now().to_sec()
+            dt = rospy.get_time() - self.last_joy
+            self.last_joy = rospy.get_time()
+            
+            if (dt >= 0.01):
+
+                self.limited_cmd.linear.x = slew_limit(self.motion_cmd.linear.x,
+                                                       self.limited_cmd.linear.x,
+                                                       self.accel_lim, dt)
+                self.limited_cmd.linear.y = slew_limit(self.motion_cmd.linear.y,
+                                                       self.limited_cmd.linear.y,
+                                                       self.accel_lim, dt)
+                self.limited_cmd.angular.z = slew_limit(self.motion_cmd.angular.z,
+                                                       self.limited_cmd.angular.z,
+                                                       self.yaw_accel_lim, dt)
+
+                if ((rospy.get_time() - self.last_motion_command_time) < 2.0):
+     
+                    
+                    self.motion_pub.publish(self.limited_cmd)
+                    
+                    if self.button_state[MAP_DEADMAN_IDX] and self.button_state[MAP_MAN_OVVRD_IDX]:
+                        self.override_pub.publish(self.motion_cmd)
+        
+        #rospy.sleep(0.01)
+
+           
+        
+        
+
 
     

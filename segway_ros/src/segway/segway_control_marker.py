@@ -1,33 +1,54 @@
 #!/usr/bin/env python
+"""--------------------------------------------------------------------
+COPYRIGHT 2015 Stanley Innovation Inc.
 
-"""
-Copyright (c) 2011, Willow Garage, Inc.
-All rights reserved.
+Software License Agreement:
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+The software supplied herewith by Stanley Innovation Inc. (the "Company") 
+for its licensed Segway RMP Robotic Platforms is intended and supplied to you, 
+the Company's customer, for use solely and exclusively with Stanley Innovation 
+products. The software is owned by the Company and/or its supplier, and is 
+protected under applicable copyright laws.  All rights are reserved. Any use in 
+violation of the foregoing restrictions may subject the user to criminal 
+sanctions under applicable laws, as well as to civil liability for the 
+breach of the terms and conditions of this license. The Company may 
+immediately terminate this Agreement upon your use of the software with 
+any products that are not Stanley Innovation products.
 
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of the Willow Garage, Inc. nor the names of its
-      contributors may be used to endorse or promote products derived from
-      this software without specific prior written permission.
+The software was written using Python programming language.  Your use 
+of the software is therefore subject to the terms and conditions of the 
+OSI- approved open source license viewable at http://www.python.org/.  
+You are solely responsible for ensuring your compliance with the Python 
+open source license.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-"""
+You shall indemnify, defend and hold the Company harmless from any claims, 
+demands, liabilities or expenses, including reasonable attorneys fees, incurred 
+by the Company as a result of any claim or proceeding against the Company 
+arising out of or based upon: 
+
+(i) The combination, operation or use of the software by you with any hardware, 
+    products, programs or data not supplied or approved in writing by the Company, 
+    if such claim or proceeding would have been avoided but for such combination, 
+    operation or use.
+ 
+(ii) The modification of the software by or on behalf of you 
+
+(iii) Your use of the software.
+
+ THIS SOFTWARE IS PROVIDED IN AN "AS IS" CONDITION. NO WARRANTIES,
+ WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT NOT LIMITED
+ TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. THE COMPANY SHALL NOT,
+ IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL OR
+ CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
+ 
+ \file   crc16.py
+
+ \brief  This module contains a collection of functions for controlling
+         the Segway V3 platforms through RVIZ with interactive markers.
+
+ \Platform: Linux/ROS Indigo
+--------------------------------------------------------------------"""
 
 import rospy
 import tf
@@ -45,7 +66,7 @@ import os
 
 
 class SegwayMarkerMenu:
-    def __init__(self,server):
+    def __init__(self,server,sim):
     
         self.wp_menu_opt = dict({2:"Add",3:"Start",4:"Stop",5:"Reset",6:"Clear",7:"Reload"})
         self.mode_menu_opt = dict({9:"Standby",10:"Tractor",11:"Balance"})
@@ -73,9 +94,10 @@ class SegwayMarkerMenu:
         self.menu_handler.setCheckState( self.h_mode_last, MenuHandler.CHECKED)
         self.h_mode_last = self.menu_handler.insert( "Tractor", parent=sub_menu_handle, callback=self._modeCb )
         self.menu_handler.setCheckState( self.h_mode_last, MenuHandler.UNCHECKED)
-        if ("true" == os.environ["SEGWAY_RUNS_IN_BALANCE_MODE"]):
-            self.h_mode_last = self.menu_handler.insert( "Balance", parent=sub_menu_handle, callback=self._modeCb )
-            self.menu_handler.setCheckState( self.h_mode_last, MenuHandler.UNCHECKED)
+        if False == sim:
+            if ("true" == os.environ["SEGWAY_RUNS_IN_BALANCE_MODE"]):
+                self.h_mode_last = self.menu_handler.insert( "Balance", parent=sub_menu_handle, callback=self._modeCb )
+                self.menu_handler.setCheckState( self.h_mode_last, MenuHandler.UNCHECKED)
         
     
         int_marker = InteractiveMarker()
@@ -158,26 +180,38 @@ class SegwayMarkerMenu:
         
         
 class SegwayMarkerControl:
-    def __init__(self):
+    def __init__(self,sim):
     
         """
         Subscribe to the configuration message
         """
-        self.config_updated = False
-        rospy.Subscriber("/segway/feedback/configuration", Configuration, self._update_configuration_limits)
-        rospy.sleep(1.0)
+        if (False == sim):
+            self.config_updated = False
+            rospy.Subscriber("/segway/feedback/configuration", Configuration, self._update_configuration_limits)
+            rospy.sleep(1.0)
+            
+            if (False == self.config_updated):
+                rospy.logerr("Timed out waiting for RMP feedback topics make sure the driver is running")
+                sys.exit(0)
+                return
+        else:
+            self.vel_limit_mps = 0.5
+            self.yaw_rate_limit_rps = 0.5
+            self.accel_lim = 1.0
+            self.yaw_accel_lim = 1.0
         
-        if (False == self.config_updated):
-            rospy.logerr("Timed out waiting for RMP feedback topics make sure the driver is running")
-            sys.exit(0)
-            return
-        
+                
         # create an interactive marker server on the topic namespace simple_marker
         self._server = InteractiveMarkerServer("segway_marker_ctrl")
         self.br = tf.TransformBroadcaster()
         self.listener = tf.TransformListener()
-        time = rospy.Time.now()
-        self.last_marker_update = rospy.Time.now().to_sec()
+        self.last_marker_update = rospy.get_time()
+        robot_name = rospy.get_param('~robot_name', "SI_VECTOR")
+        
+        if ("RMP_OMNI" == robot_name) or ("SI_VECTOR" == robot_name):
+            self.include_y = True
+        else:
+            self.include_y = False
         
         self.linear_scale = rospy.get_param('~linear_scale', 1.0);
         self.angular_scale = rospy.get_param('~angular_scale', 2.2);
@@ -201,15 +235,16 @@ class SegwayMarkerControl:
         control.interaction_mode = InteractiveMarkerControl.MOVE_AXIS;
         int_marker.controls.append( control )
         
-        control = InteractiveMarkerControl()
-        control.orientation_mode = InteractiveMarkerControl.FIXED;
-        control.orientation.w = 1;
-        control.orientation.x = 0;
-        control.orientation.y = 0;
-        control.orientation.z = 1;
-        control.name = "move_y";
-        control.interaction_mode = InteractiveMarkerControl.MOVE_AXIS;
-        int_marker.controls.append( control )
+        if (True == self.include_y):
+            control = InteractiveMarkerControl()
+            control.orientation_mode = InteractiveMarkerControl.FIXED;
+            control.orientation.w = 1;
+            control.orientation.x = 0;
+            control.orientation.y = 0;
+            control.orientation.z = 1;
+            control.name = "move_y";
+            control.interaction_mode = InteractiveMarkerControl.MOVE_AXIS;
+            int_marker.controls.append( control )
 
         control = InteractiveMarkerControl()
         control.orientation_mode = InteractiveMarkerControl.FIXED;
@@ -228,7 +263,7 @@ class SegwayMarkerControl:
         # 'commit' changes and send to all clients
         self._server.applyChanges()
         
-        SegwayMarkerMenu(self._server)       
+        SegwayMarkerMenu(self._server,sim)       
         
     def _update_configuration_limits(self,config):
         self.vel_limit_mps = config.teleop_vel_limit_mps
@@ -240,27 +275,39 @@ class SegwayMarkerControl:
     def processFeedback(self,feedback):
         p = feedback.pose.position
         o = feedback.pose.orientation
-        dt = rospy.Time.now().to_sec() - self.last_marker_update
-        self.last_marker_update = rospy.Time.now().to_sec()
-        (roll, pitch, yaw) = tf.transformations.euler_from_quaternion([o.x, o.y, o.z, o.w])
-        vx = p.x * self.linear_scale
-        vx = limit_f(vx,self.vel_limit_mps)
-        vy = p.y * self.linear_scale
-        vy = limit_f(vy,self.vel_limit_mps)
-        wz = yaw * self.angular_scale          
-        wz = limit_f(wz,self.yaw_rate_limit_rps)
-
-        self.motion_cmd.linear.x = slew_limit(vx,
-                                              self.motion_cmd.linear.x,
-                                              self.accel_lim, dt)
-        self.motion_cmd.linear.y = slew_limit(vy,
-                                              self.motion_cmd.linear.y,
-                                              self.accel_lim, dt)
-        self.motion_cmd.angular.z = slew_limit(wz,
-                                              self.motion_cmd.angular.z,
-                                              self.yaw_accel_lim, dt)
         
-        self.motion_pub.publish(self.motion_cmd)
+        now_time = rospy.get_time()
+        dt = now_time - self.last_marker_update
+        
+        
+                
+        if (dt >= 0.01):
+            self.last_marker_update = now_time
+            (roll, pitch, yaw) = tf.transformations.euler_from_quaternion([o.x, o.y, o.z, o.w])
+            vx = p.x * self.linear_scale
+            vx = limit_f(vx,self.vel_limit_mps)
+            if (True == self.include_y):
+                vy = p.y * self.linear_scale
+                vy = limit_f(vy,self.vel_limit_mps)
+            wz = yaw * self.angular_scale          
+            wz = limit_f(wz,self.yaw_rate_limit_rps)
+
+            self.motion_cmd.linear.x = slew_limit(vx,
+                                                  self.motion_cmd.linear.x,
+                                                  self.accel_lim, dt)
+            if (True == self.include_y):
+                self.motion_cmd.linear.y = slew_limit(vy,
+                                                      self.motion_cmd.linear.y,
+                                                      self.accel_lim, dt)
+            else:
+                self.motion_cmd.linear.y = 0.0
+            
+            self.motion_cmd.angular.z = slew_limit(wz,
+                                                   self.motion_cmd.angular.z,
+                                                   self.yaw_accel_lim, dt)
+        
+
+            self.motion_pub.publish(self.motion_cmd)
         
         self._server.setPose(feedback.marker_name, Pose())
         self._server.applyChanges()

@@ -28,52 +28,50 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 	<xacro:macro name="omni_flex_pivot" params="parent *origin">
         
 	    <link name="omni_flex_pivot_link">
-			<inertial>
+			<!--inertial>
 				<mass value="2.883334" />
 				<origin xyz="0 0 0" />
 				<inertia  ixx="0.023852"   ixy="0.0000000"  ixz="0.000364" 
 				          iyx="0.0000000"   iyy="0.025180"  iyz="-0.000001" 
 				          izx ="0.000364"   izy="-0.000001" izz="0.029247" />
-			</inertial>
+			</inertial-->
 			<visual>
-				<origin xyz="0 0 0" rpy="0 0 0" />
 				<geometry>
-					<mesh filename="package://segway_description/meshes/omni_flex_pivot.dae" />
+					<mesh filename="package://segway_description/meshes/visual/omni_flex_pivot.dae" />
 				</geometry>
 			</visual>
-			<collision>
-				<origin xyz="0 0 0.54452" rpy="0 0 0" />
+			<!--collision>
 				<geometry>
-					<box size="0.23495 0.42328 0.108905"/>
+					<mesh filename="package://segway_description/meshes/collision/omni_flex_pivot.stl" />
 				</geometry>
-			</collision>
+			</collision-->
 		</link>
 		
-        <gazebo reference="omni_flex_pivot_link">
+        <!--gazebo reference="omni_flex_pivot_link">
 			<mu1 value="100.0"/>
 			<mu2 value="100.0"/>
 			<kp value="10000000.0" />
 			<kd value="1.0" />
-		</gazebo>
+		</gazebo-->
 
-		<joint name="omni_flex_pivot_joint" type="continuous">
+		<joint name="omni_flex_pivot_joint" type="fixed">
 		    <xacro:insert_block name="origin" />
 			<parent link="${parent}"/>
 			<child link="omni_flex_pivot_link"/>
-			<!--xacro:insert_block name="joint_pose"/-->
+			<!--xacro:insert_block name="joint_pose"/>
             <axis xyz="1 0 0" />
             <anchor xyz="0 0 0" />
             <limit effort="100" velocity="100" k_velocity="0" />
-            <joint_properties damping="0.0" friction="0.0" />
+            <joint_properties damping="0.0" friction="0.0" /!-->
 		</joint>
 
-		<transmission name="omni_flex_pivot_trans" type="SimpleTransmission">
+		<!--transmission name="omni_flex_pivot_trans" type="SimpleTransmission">
 			<type>transmission_interface/SimpleTransmission</type>
 			<actuator name="omni_flex_pivot_motor">
 				<mechanicalReduction>1</mechanicalReduction>
 			</actuator>
 			<joint name="omni_flex_pivot_joint"/>
-		</transmission>
+		</transmission-->
 		
     </xacro:macro>
 

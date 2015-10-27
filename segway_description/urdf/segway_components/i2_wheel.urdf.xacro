@@ -25,35 +25,36 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 -->
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="i2_wheel">
 
-	<xacro:macro name="i2_wheel" params="wheel_prefix parent *joint_pose">
+	<xacro:macro name="i2_wheel" params="wheel_prefix parent visual_rotation *joint_pose">
 		<link name="${wheel_prefix}_wheel_link">
 			<inertial>
-				<mass value="4.373333" />
+				<mass value="4.195729" />
 				<origin xyz="0 0 0" />
-				<inertia  ixx="0.156175"   ixy="-0.000011" ixz="0.000007" 
-				          iyx="-0.000011"  iyy="0.290981"  iyz="-0.000013" 
-				          izx = "0.000007" izy="-0.000013" izz="0.156207" />
+				<inertia  ixx="0.063680" ixy="0.000000" ixz="0.000000"
+                          iyx="0.000000" iyy="0.121410" iyz="0.000000"
+                          izx="0.000000" izy="0.000000" izz="0.063680" />
 			</inertial>
 			<visual>
-				<origin xyz="0 0 0" rpy="0 0 0" />
+			    <origin xyz="0 0 0" rpy="0 0 ${visual_rotation}"/>
 				<geometry>
-					<mesh filename="package://segway_description/meshes/i2_wheel.dae" />
+					<mesh filename="package://segway_description/meshes/visual/i2_wheel.dae" />
 				</geometry>
 			</visual>
 			<collision>
-				<origin xyz="0 0 0" rpy="0 0 0" />
+			    <origin xyz="0 0 0" rpy="${M_PI / 2.0} 0 0"/>
 				<geometry>
-					<cylinder length="0.9224900" radius="0.23114"/>
-			    </geometry>
+				    <cylinder length="0.092249" radius="0.2405681"/>
+				</geometry>
 			</collision>
 		</link>
 
 		<gazebo reference="${wheel_prefix}_wheel_link">
-			<mu1 value="1.0"/>
-			<mu2 value="1.0"/>
+			<mu1 value="10.0"/>
+			<mu2 value="10.0"/>
 			<kp value="10000000.0" />
-			<kd value="1.0" />
+			<kd value="10.0" />
 			<fdir1 value="1 0 0"/>
+			<minDepth>0.003</minDepth>
 		</gazebo>
 
 		<joint name="${wheel_prefix}_wheel" type="continuous">

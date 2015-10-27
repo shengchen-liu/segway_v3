@@ -41,15 +41,13 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 				          izx ="-0.000590"     izy="0.0"      izz="0.055366" />
 			</inertial>
 			<visual>
-				<origin xyz="0 0 0" rpy="0 0 0" />
 				<geometry>
-					<mesh filename="package://segway_description/meshes/omni_ui_mount.dae" />
+					<mesh filename="package://segway_description/meshes/visual/omni_ui_mount.dae" />
 				</geometry>
 			</visual>
 			<collision>
-				<origin xyz="0 0 0.0508" rpy="0 0 0" />
 				<geometry>
-					<box size="0.4  0.36635 0.1016"/>
+					<mesh filename="package://segway_description/meshes/collision/omni_ui_mount.stl" />
 				</geometry>
 			</collision>
 		</link>

@@ -33,25 +33,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         </joint>
         
 	    <link name="${chassis_prefix}_chassis_link">
-			<inertial>
-				<mass value="16.81942" />
-				<origin xyz="0 0 0" />
-				<inertia  ixx="0.67211"   ixy="-0.01766" ixz="0.00024" 
-				          iyx="-0.01766"  iyy="0.17821"  iyz="0.00011" 
-				          izx ="0.00024"  izy="0.00011"  izz="0.73014" />
-			</inertial>
 			<visual>
-				<origin xyz="0 0 0" rpy="0 0 0" />
 				<geometry>
-					<mesh filename="package://segway_description/meshes/inv_gearbox_chassis.dae" />
+					<mesh filename="package://segway_description/meshes/visual/inv_gearbox_chassis.dae" />
 				</geometry>
 			</visual>
-			<collision>
-				<origin xyz="0 0 0.09054" rpy="0 0 0" />
-				<geometry>
-					<box size="0.41910  0.60584 0.25945 "/>
-				</geometry>
-			</collision>
 		</link>
     </xacro:macro>
 

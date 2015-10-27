@@ -33,17 +33,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         </joint>
         
 	    <link name="ui_box_mount_link">
-			<inertial>
-				<mass value="0.308710" />
-				<origin xyz="0 0 0" />
-				<inertia  ixx="0.011277" ixy="0.0"      ixz="0.0" 
-				          iyx="0.0"      iyy="0.001235" iyz="0.0" 
-				          izx ="0.0"     izy="0.0"      izz="0.011231" />
-			</inertial>
 			<visual>
-				<origin xyz="0 0 0" rpy="0 0 0" />
 				<geometry>
-					<mesh filename="package://segway_description/meshes/ui_box_spacer_mount.dae" />
+					<mesh filename="package://segway_description/meshes/visual/ui_box_spacer_mount.dae" />
 				</geometry>
 			</visual>
 		</link>

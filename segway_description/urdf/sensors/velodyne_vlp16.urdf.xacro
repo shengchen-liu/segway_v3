@@ -41,18 +41,57 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
                          izx="0.0" izy="0.0"      izz="0.002159" />
             </inertial>
             <visual>
-                <origin xyz="0 0 0" rpy="0 0 0" />
                 <geometry>
-                    <mesh filename="package://segway_description/meshes/sensors/velodyne_vlp16.dae" />
+                    <mesh filename="package://segway_description/meshes/visual/sensors/velodyne_vlp16.dae" />
                 </geometry>
             </visual>
             <collision>
-                <origin xyz="0 0 -0.035" rpy="0 0 0" />
                 <geometry>
-                    <box size="0.05 0.05 0.072" />
+                    <mesh filename="package://segway_description/meshes/collision/sensors/velodyne_vlp16.stl" />
                 </geometry>
             </collision>
         </link>
+        
+        <gazebo reference="velodyne_frame">>
+            <sensor name="velodyne" type="ray">
+                <pose>0 0 0 0 0 0</pose>
+                <visualize>false</visualize>
+                <update_rate>10</update_rate>
+                <ray>
+                    <scan>
+                        <horizontal>
+                            <samples>720</samples>
+                            <resolution>1</resolution>
+                            <min_angle>${-M_PI}</min_angle>
+                            <max_angle>${M_PI}</max_angle>
+                        </horizontal>
+                        <vertical>
+                            <samples>16</samples>
+                            <resolution>1</resolution>
+                            <min_angle>-0.261799388</min_angle>
+                            <max_angle>0.261799388</max_angle>
+                        </vertical>
+                    </scan>
+                    <range>
+                        <min>0.10</min>
+                        <max>20.0</max>
+                        <resolution>0.01</resolution>
+                    </range>
+                    <noise>
+                        <type>gaussian</type>
+                        <mean>0.0</mean>
+                        <stddev>0.01</stddev>
+                    </noise>
+                </ray>
+                <!-- test plugin -->
+                <plugin name="plugin_1" filename="libgazebo_ros_block_laser.so">
+                    <updateRate>10.0</updateRate>
+                    <topicName>/segway/velodyne_scan</topicName>
+                    <frameName>/segway/velodyne_frame</frameName>
+                </plugin>
+
+            </sensor>
+        </gazebo>
 
     </xacro:macro>
 </robot>

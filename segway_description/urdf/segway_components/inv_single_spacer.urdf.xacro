@@ -33,25 +33,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         </joint>
         
 	    <link name="${spacer_prefix}_spacer_link">
-			<inertial>
-				<mass value="2.091636" />
-				<origin xyz="0 0 0" />
-				<inertia  ixx="0.002829"   ixy="-0.000001"  ixz="0.000392" 
-				          iyx="-0.000001"   iyy="0.031337"  iyz="0.000009" 
-				          izx ="0.000392"   izy="0.000009" izz="0.028885" />
-			</inertial>
 			<visual>
-				<origin xyz="0 0 0" rpy="0 0 0" />
 				<geometry>
-					<mesh filename="package://segway_description/meshes/inv_single_spacer.dae" />
+					<mesh filename="package://segway_description/meshes/visual/inv_single_spacer.dae" />
 				</geometry>
 			</visual>
-			<collision>
-				<origin xyz="0 0 0.0508" rpy="0 0 0" />
-				<geometry>
-					<box size="0.4191 0.3164 0.1016"/>
-				</geometry>
-			</collision>
 		</link>
     </xacro:macro>
 

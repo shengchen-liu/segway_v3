@@ -3,7 +3,7 @@
 Software License Agreement (BSD)
 
 \file      x2_wheel.urdf.xacro
-\authors   Matt Harding
+\authors   Patrick Hussey
 \copyright Copyright (c) 2015, Stanley Innovation, Inc., All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -25,42 +25,43 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 -->
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="x2_wheel">
 
-	<xacro:macro name="x2_wheel" params="wheel_prefix parent *joint_pose">
+	<xacro:macro name="x2_wheel" params="wheel_prefix parent visual_rotation *joint_pose">
 		<link name="${wheel_prefix}_wheel_link">
 			<inertial>
-				<mass value="7.249115" />
+				<mass value="7.030682" />
 				<origin xyz="0 0 0" />
-				<inertia  ixx="0.029212"  ixy="0.003315"  ixz="-0.000004" 
-				          iyx="0.003315"  iyy="0.027512"  iyz="-0.000031" 
-				          izx="-0.000004" izy="-0.000031" izz="0.030125" />
+				<inertia  ixx="0.140020" ixy= "0.000000" ixz="0.000000"
+                          iyx="0.000000" iyy= "0.250042" iyz="0.000000"
+                          izx="0.000000" izy= "0.000000" izz="0.140020"/>
 			</inertial>
 			<visual>
-				<origin xyz="0 0 0" rpy="0 0 0" />
+			    <origin xyz="0 0 0" rpy="0 0 ${visual_rotation}"/>
 				<geometry>
-					<mesh filename="package://segway_description/meshes/x2_wheel.dae" />
+					<mesh filename="package://segway_description/meshes/visual/x2_wheel.dae" />
 				</geometry>
 			</visual>
 			<collision>
-				<origin xyz="0 0 0" rpy="0 0 0" />
+			    <origin xyz="0 0 0" rpy="${M_PI / 2.0} 0 0"/>
 				<geometry>
-					<cylinder length="0.09224900" radius="0.23114"/>
-			    </geometry>
+				    <cylinder length="0.16" radius="0.2667"/>
+				</geometry>
 			</collision>
 		</link>
 
 		<gazebo reference="${wheel_prefix}_wheel_link">
 			<mu1 value="1.0"/>
 			<mu2 value="1.0"/>
-			<kp value="10000000.0" />
-			<kd value="1.0" />
+			<kp value="8000000.0" />
+			<kd value="10.0" />
 			<fdir1 value="1 0 0"/>
 		</gazebo>
 
 		<joint name="${wheel_prefix}_wheel" type="continuous">
 			<parent link="${parent}"/>
 			<child link="${wheel_prefix}_wheel_link"/>
-			<xacro:insert_block name="joint_pose"/>
+			<xacro:insert_block name="joint_pose" />
 			<axis xyz="0 1 0" rpy="0 0 0" />
+            <limit effort="1000.0" velocity="2000.0" />
 		</joint>
 
 		<transmission name="${wheel_prefix}_wheel_trans" type="SimpleTransmission">

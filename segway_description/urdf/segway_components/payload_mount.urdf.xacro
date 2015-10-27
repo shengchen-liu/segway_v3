@@ -33,25 +33,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         </joint>
         
 	    <link name="payload_link">
-			<inertial>
-				<mass value="16.123969" />
-				<xacro:insert_block name="origin" />
-				<inertia  ixx="0.780957"   ixy="-0.000002" ixz="0.000005" 
-				          iyx="-0.000002"  iyy="0.733824"  iyz="0.000006"
-				          izx ="0.000005"  izy="0.000006"  izz="0.663831" />
-			</inertial>
 			<visual>
-				<origin xyz="0 0 0" rpy="0 0 0" />
 				<geometry>
-					<mesh filename="package://segway_description/meshes/payload_mount.dae" />
+					<mesh filename="package://segway_description/meshes/visual/payload_mount.dae" />
 				</geometry>
 			</visual>
-			<collision>
-				<origin xyz="0 0 -.27464" rpy="0 0 0" />
-				<geometry>
-					<cylinder length="0.54928" radius="0.229"/>
-				</geometry>
-			</collision>
 		</link>
     </xacro:macro>
 

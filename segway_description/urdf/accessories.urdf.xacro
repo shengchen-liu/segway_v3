@@ -34,27 +34,28 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     
     <xacro:macro name="segway_accessories">
         <!-- CH Robotics UM7 Link-->
-        <xacro:if value="$(optenv SEGWAY_HAS_CH_UM7 false)">
-            <link name="um7_frame"/>
-            <joint name="um7_joint" type="fixed">
+        <xacro:if value="$(optenv SEGWAY_HAS_EXT_IMU false)">
+            <link name="ext_imu_frame"/>
+            <joint name="ext_imu_joint" type="fixed">
                 <origin xyz="$(optenv EXT_IMU_XYZ 0 0 0.30635)" rpy="$(optenv EXT_IMU_RPY 0 0 0)" />
                 <parent link="$(optenv SEGWAY_PARENT_LINK base_chassis_link)" />
-                <child link="um7_frame" />
+                <child link="ext_imu_frame" />
             </joint>
-            <gazebo reference="um7_frame"/>
+            <gazebo>
+                <plugin name="imu_controller" filename="libhector_gazebo_ros_imu.so">
+                    <alwaysOn>1</alwaysOn>
+                    <updateRate>50.0</updateRate>
+                    <bodyName>ext_imu_frame</bodyName>
+                    <topicName>/segway/feedback/um7_imu</topicName>
+                    <accelDrift>0.005 0.005 0.005</accelDrift>
+                    <accelGaussianNoise>0.005 0.005 0.005</accelGaussianNoise>
+                    <rateDrift>0.005 0.005 0.005 </rateDrift>
+                    <rateGaussianNoise>0.005 0.005 0.005 </rateGaussianNoise>
+                    <headingDrift>0.005</headingDrift>
+                    <headingGaussianNoise>0.005</headingGaussianNoise>
+                </plugin>
+            </gazebo>
         </xacro:if>
-
-        <!-- Segway BSA Link (sign convention applied at embedded level)-->
-        <xacro:if value="$(optenv SEGWAY_HAS_BSA false)">
-            <link name="bsa_link"/>
-            <joint name="bsa_joint" type="fixed">
-                <origin xyz="0 0 0" rpy="0 0 0" />
-                <parent link="$(optenv SEGWAY_PARENT_LINK base_chassis_link)" />
-                <child link="bsa_link" />
-            </joint>
-            <gazebo reference="bsa_link"/>
-        </xacro:if>
-        
 
         <!--GPS Link-->
         <xacro:if value="$(optenv SEGWAY_HAS_GPS false)">
@@ -64,7 +65,20 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
                 <parent link="$(optenv SEGWAY_PARENT_LINK base_chassis_link)" />
                 <child link="gps_link" />
             </joint>
-            <gazebo reference="gps_link"/>
+            <gazebo>
+                <plugin name="gps_controller" filename="libhector_gazebo_ros_gps.so">
+                    <alwaysOn>1</alwaysOn>
+                    <updateRate>40</updateRate>
+                    <bodyName>gps_link</bodyName>
+                    <topicName>/segway/feedback/gps/fix</topicName>
+                    <velocityTopicName>/segway/feedback/gps/vel</velocityTopicName>
+                    <referenceLatitude>40.712784</referenceLatitude>
+                    <referenceLongitude>-74.005941</referenceLongitude>
+                    <referenceHeading>0</referenceHeading>
+                    <referenceAltitude>0</referenceAltitude>
+                    <drift>0.0001 0.0001 0.0001</drift>
+                </plugin>
+            </gazebo>
         </xacro:if>
         
         <!-- RGBD Sensor -->
@@ -97,7 +111,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 
         <!-- PGR FLEA3 Sensor -->
         <xacro:if value="$(optenv SEGWAY_HAS_FLEA3 false)">
-            <xacro:pgr_flea3 camera_prefix="camera" parent="$(optenv SEGWAY_PARENT_LINK base_chassis_link)">
+            <xacro:pgr_flea3 camera_prefix="camera" parent="$(optenv SEGWAY_PARENT_LINK base_chassis_link)" 
+                          image_format="R8G8B8" image_topic_name="image_raw"
+                          camera_info_topic_name="camera_info" hfov="90" focal_length="320.000105"
+                          hack_baseline="0" image_width="640" image_height="480">
                 <origin xyz="$(optenv FLEA3_XYZ 0 0 0.32739)" rpy="$(optenv FLEA3_RPY -1.5708 0 -1.5708)" />
             </xacro:pgr_flea3>
         </xacro:if>

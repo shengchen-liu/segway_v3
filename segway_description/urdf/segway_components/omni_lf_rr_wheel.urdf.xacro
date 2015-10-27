@@ -28,50 +28,49 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 	<xacro:macro name="omni_lf_rr_wheel" params="wheel_prefix parent *joint_pose">
 		<link name="${wheel_prefix}_wheel_link">
 			<inertial>
-				<mass value="3.648316" />
+				<mass value="5.398" />
 				<origin xyz="0 0 0" />
-				<inertia  ixx="0.021833"  ixy="0.000000"  ixz="0.000000" 
-				          iyx="0.000000"  iyy="0.038570"  iyz="0.000000" 
-				          izx="0.000000"  izy="0.000000" izz="0.021834" />
+				<inertia  ixx="0.026054"  ixy="0.000000"  ixz="0.000000" 
+				          iyx="0.000000"  iyy="0.043532"  iyz="0.000000" 
+				          izx="0.000000"  izy="0.000000" izz="0.026054" />
 			</inertial>
 			<visual>
-				<origin xyz="0 0 0" rpy="0 0 0" />
 				<geometry>
-					<mesh filename="package://segway_description/meshes/omni_lf_rr_wheel.dae" />
+					<mesh filename="package://segway_description/meshes/visual/omni_lf_rr_wheel.dae" />
 				</geometry>
 			</visual>
 			<collision>
-				<origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
+			    <origin xyz="0 0 0" rpy="${M_PI / 2.0} 0 0"/>
 				<geometry>
-					<cylinder length="0.09763760" radius="0.127"/>
-			    </geometry>
+				    <cylinder length="0.0976376" radius="0.127"/>
+				</geometry>
 			</collision>
 		</link>
 
 		<gazebo reference="${wheel_prefix}_wheel_link">
-			<mu1 value="1.0"/>
-			<mu2 value="1.0"/>
+			<mu1 value="0.1"/>
+			<mu2 value="0.1"/>
 			<kp value="10000000.0" />
 			<kd value="1.0" />
 			<fdir1 value="1 0 0"/>
 		</gazebo>
 
-		<joint name="${wheel_prefix}_wheel" type="continuous">
+		<joint name="${wheel_prefix}_wheel" type="fixed">
 			<parent link="${parent}"/>
 			<child link="${wheel_prefix}_wheel_link"/>
 			<xacro:insert_block name="joint_pose"/>
 			<axis xyz="0 1 0" rpy="0 0 0" />
 		</joint>
 
-		<transmission name="${wheel_prefix}_wheel_trans" type="SimpleTransmission">
+		<!--transmission name="${wheel_prefix}_wheel_trans" type="SimpleTransmission">
 			<type>transmission_interface/SimpleTransmission</type>
 			<actuator name="${wheel_prefix}_wheel_motor">
 				<mechanicalReduction>1</mechanicalReduction>
 			</actuator>
 			<joint name="${wheel_prefix}_wheel">
-				<hardwareInterface>VelocityJointInterface</hardwareInterface>
+				<hardwareInterface>EffortJointInterface</hardwareInterface>
 			</joint>
-		</transmission>
+		</transmission-->
 
 	</xacro:macro>
 </robot>

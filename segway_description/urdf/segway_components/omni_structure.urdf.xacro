@@ -33,25 +33,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         </joint>
         
 	    <link name="omni_structure_link">
-			<inertial>
-				<mass value="21.718705" />
-				<origin xyz="0 0 0" />
-				<inertia  ixx="0.717807"   ixy="0.000001"  ixz="0.325590" 
-				          iyx="0.000001"   iyy="3.805669"  iyz="-0.000004" 
-				          izx ="0.325590"   izy="-0.000001" izz="4.240813" />
-			</inertial>
 			<visual>
-				<origin xyz="0 0 0" rpy="0 0 0" />
 				<geometry>
-					<mesh filename="package://segway_description/meshes/omni_structure.dae" />
+					<mesh filename="package://segway_description/meshes/visual/omni_structure.dae" />
 				</geometry>
 			</visual>
-			<collision>
-				<origin xyz="0 0 0.0650875" rpy="0 0 0" />
-				<geometry>
-					<box size="1.22555 0.43213 0.130175"/>
-				</geometry>
-			</collision>
 		</link>
     </xacro:macro>
 

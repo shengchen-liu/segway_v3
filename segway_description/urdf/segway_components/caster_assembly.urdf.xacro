@@ -34,38 +34,40 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         
 	    <link name="${caster_prefix}_caster_plate_link">
 			<inertial>
-				<mass value="3.48" />
-				<origin xyz="0 0 0" />
-				<inertia  ixx="0.070553"   ixy="0.000000"  ixz="0.000000" 
-				          iyx="0.000000"   iyy="0.014280"  iyz="0.000000" 
-				          izx ="0.00000"   izy="0.000000" izz="0.080040" />
+				<mass value="4.487241" />
+				<origin xyz="0.027375 0 0.016101" />
+				<inertia  ixx="0.070527"  ixy="0.000000" ixz="-0.001013"
+                          iyx="0.000000"  iyy="0.010678" iyz="0.000000"
+                          izx="-0.001013" izy="0.000000" izz="0.078313" />
 			</inertial>
 			<visual>
-				<origin xyz="0 0 0" rpy="0 0 0" />
 				<geometry>
-					<mesh filename="package://segway_description/meshes/caster_plate.dae" />
+					<mesh filename="package://segway_description/meshes/visual/caster_plate.dae" />
 				</geometry>
 			</visual>
+			<collision>
+				<geometry>
+					<mesh filename="package://segway_description/meshes/collision/caster_plate_collision.stl" />
+				</geometry>
+			</collision>
 		</link>
 			
 		<link name="${caster_prefix}_caster_swivel_link">
 			<inertial>
-				<mass value="0.585606" />
-				<origin xyz="0 0 0" />
-				<inertia  ixx="0.002527"   ixy="-0.000006" ixz="0.000788" 
-				          iyx="-0.000006"  iyy="0.002659"  iyz="-0.000019" 
-				          izx = "0.000788" izy="-0.000019" izz="0.000704" />
+				<mass value="0.579519" />
+				<origin xyz="-0.020596 0.000280 -0.055367" />
+				<inertia  ixx="0.001361"  ixy="-0.000003" ixz="0.000347"
+                          iyx="-0.000003" iyy="0.001287"  iyz="-0.000010"
+                          izx="0.000347"  izy="-0.000010" izz="0.000632" />
 			</inertial>
 			<visual>
-				<origin xyz="0 0 0" rpy="0 0 0" />
 				<geometry>
-					<mesh filename="package://segway_description/meshes/caster_bracket.dae" />
+					<mesh filename="package://segway_description/meshes/visual/caster_bracket.dae" />
 				</geometry>
 			</visual>
 			<collision>
-				<origin xyz="0 0 0" rpy="0 0 0" />
 				<geometry>
-					<cylinder length="0.12775649" radius="0.12775649" />
+					<mesh filename="package://segway_description/meshes/collision/caster_bracket_collision.stl" />
 				</geometry>
 			</collision>
 		</link>
@@ -83,16 +85,20 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 			<!--xacro:insert_block name="joint_pose"/-->
             <axis xyz="0 0 1" />
             <anchor xyz="0 0 0" />
-            <limit effort="100" velocity="100" k_velocity="0" />
-            <joint_properties damping="0.0" friction="0.0" />
+            <limit effort="0.0" velocity="1000" />
+            <dynamics damping="0.7"/>
 		</joint>
 
 		<transmission name="${caster_prefix}_caster_swivel_trans" type="SimpleTransmission">
 			<type>transmission_interface/SimpleTransmission</type>
+
+			<joint name="${caster_prefix}_caster_swivel">
+			    <hardwareInterface>EffortJointInterface</hardwareInterface>
+			</joint>
 			<actuator name="${caster_prefix}_caster_swivel_motor">
+			    <hardwareInterface>EffortJointInterface</hardwareInterface>
 				<mechanicalReduction>1</mechanicalReduction>
 			</actuator>
-			<joint name="${caster_prefix}_caster_swivel"/>
 		</transmission>
 		
         <link name="${caster_prefix}_caster_wheel_link">
@@ -104,15 +110,14 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 				          izx = "0.000000" izy="0.000000" izz="0.001442" />
 			</inertial>
 			<visual>
-				<origin xyz="0 0 0" rpy="0 0 0" />
 				<geometry>
-					<mesh filename="package://segway_description/meshes/caster_wheel.dae" />
+					<mesh filename="package://segway_description/meshes/visual/caster_wheel.dae" />
 				</geometry>
 			</visual>
 			<collision>
-				<origin xyz="0 0 0" rpy="0 0 0" />
+			    <origin xyz="0 0 0" rpy="${M_PI / 2.0} 0 0"/>
 				<geometry>
-					<cylinder length="0.04584232" radius="0.1524" />
+				    <cylinder length="0.050" radius="0.0762"/>
 				</geometry>
 			</collision>
 		</link>
@@ -121,7 +126,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 			<mu1 value="100.0"/>
 			<mu2 value="100.0"/>
 			<kp value="10000000.0" />
-			<kd value="1.0" />
+			<kd value="10.0" />
+			<fdir1 value="1 0 0"/>
+			<minDepth>0.003</minDepth>
 		</gazebo>
 
 		<joint name="${caster_prefix}_caster_wheel" type="continuous">
@@ -130,16 +137,20 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 			<origin xyz="-0.03782 0 -0.10608" rpy="0 0 0"/>
             <axis xyz="0 1 0" />
             <anchor xyz="-0.03782 0 -0.10608" />
-            <limit effort="100" velocity="100" k_velocity="0" />
-            <joint_properties damping="0.0" friction="0.0" />
+            <limit effort="0.0" velocity="1000" />
+            <dynamics damping="0.2"/>
 		</joint>
 
 		<transmission name="${caster_prefix}_caster_wheel_trans" type="SimpleTransmission">
 			<type>transmission_interface/SimpleTransmission</type>
+
+			<joint name="${caster_prefix}_caster_wheel">
+			    <hardwareInterface>EffortJointInterface</hardwareInterface>
+			</joint>
 			<actuator name="${caster_prefix}_caster_wheel_motor">
+			    <hardwareInterface>EffortJointInterface</hardwareInterface>
 				<mechanicalReduction>1</mechanicalReduction>
 			</actuator>
-			<joint name="${caster_prefix}_caster_wheel"/>
 		</transmission>
 
 	</xacro:macro>

@@ -58,6 +58,7 @@ if __name__ == "__main__":
     Initialize the node
     """
     rospy.init_node('segway_marker_ctrl')
-    SegwayMarkerControl()
+    sim = rospy.get_param('~sim',False)
+    SegwayMarkerControl(sim)
     rospy.spin()
     
