@@ -97,4 +97,4 @@ export SEGWAY_HAS_FLEA3=false
 export SEGWAY_FLEA3_SN='14472220'
 export SEGWAY_FLEA3_IS_CALIBRATED=false
 export FLEA3_XYZ="0 0 0.32739"
-export FLEA3_RPY="-1.5708 0 -1.5708"
+export FLEA3_RPY="0 0 0"

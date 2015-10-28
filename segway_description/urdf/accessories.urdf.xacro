@@ -113,9 +113,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         <xacro:if value="$(optenv SEGWAY_HAS_FLEA3 false)">
             <xacro:pgr_flea3 camera_prefix="camera" parent="$(optenv SEGWAY_PARENT_LINK base_chassis_link)" 
                           image_format="R8G8B8" image_topic_name="image_raw"
-                          camera_info_topic_name="camera_info" hfov="90" focal_length="320.000105"
+                          camera_info_topic_name="camera_info" hfov="90" focal_length="317.772992"
                           hack_baseline="0" image_width="640" image_height="480">
-                <origin xyz="$(optenv FLEA3_XYZ 0 0 0.32739)" rpy="$(optenv FLEA3_RPY -1.5708 0 -1.5708)" />
+                <origin xyz="$(optenv FLEA3_XYZ 0 0 0.32739)" rpy="$(optenv FLEA3_RPY 0 0 0)" />
             </xacro:pgr_flea3>
         </xacro:if>
 
