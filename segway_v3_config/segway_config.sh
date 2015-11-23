@@ -24,6 +24,11 @@ export SEGWAY_HAS_BSA=false
 export SEGWAY_BASE_PLATFORM=RMP_210
 export SEGWAY_PLATFORM_NAME=RMP_210
 
+# Defines the location of the sensors frames and the UI box
+# they all move together for the navigator elite. This is the point at the
+# base of the sensor pedestal aligned with the base_link
+export NAVIGATOR_ELITE_XYZ="-0.1801 0 0.060625"
+
 #Only the RMP220 and RMP210 can have caster plates so do not enable them if using another model
 export SEGWAY_HAS_REAR_CASTER=true
 export SEGWAY_HAS_FRONT_CASTER=true
@@ -51,15 +56,15 @@ export SEGWAY_USE_VOXEL_GRID=false
 export SEGWAY_HAS_EXT_IMU=false
 export SEGWAY_HAS_UM7_IMU=false
 export SEGWAY_UM7_DEV="/dev/serial/by-path/pci-0000:00:1a.0-usb-0:1.5:1.0-port0"
-export EXT_IMU_XYZ="0 0 0.16635"
+export EXT_IMU_XYZ="0 0 0.33405"
 export EXT_IMU_RPY="0 0 0"
 
 # GPS configuration
 export SEGWAY_HAS_GPS=false
 export SEGWAY_HAS_NEO7=false
 export SEGWAY_NEO7_DEV="/dev/serial/by-path/pci-0000:00:1a.0-usb-0:1.6:1.0-port0"
-export GPS_XYZ="-0.1189 0 0.34665"
-export GPS_RPY="-0.1189 0 0.34665"
+export GPS_XYZ="-0.07312445 0 0.38512342"
+export GPS_RPY="0 0 0"
 
 # 2D scanner configuration for launch files; should change hokuyo
 # to sick if using a SICK LMS1XX
@@ -89,12 +94,12 @@ export RGBD_SENSOR_RPY="0 0 0"
 export SEGWAY_HAS_VLP16=false
 export SEGWAY_VLP16_IP=192.168.1.201
 export SEGWAY_VLP16_PORT=2368
-export VLP16_XYZ="0 0 0.39991"
+export VLP16_XYZ="0.0254 0 0.42760744"
 export VLP16_RPY="0 0 0"
 
 # Machine vision
 export SEGWAY_HAS_FLEA3=false
 export SEGWAY_FLEA3_SN='14472220'
 export SEGWAY_FLEA3_IS_CALIBRATED=false
-export FLEA3_XYZ="0 0 0.32739"
+export FLEA3_XYZ="0.0518 0 0.35508750"
 export FLEA3_RPY="0 0 0"
