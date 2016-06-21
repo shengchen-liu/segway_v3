@@ -487,7 +487,7 @@ class BSA_Packet(object):
         self._StatData = self.pse_data_valid 
         
                 
-        if not rospy.is_shutdown() and (True == has_segway_bsa):
+        if not rospy.is_shutdown() and (1 == has_segway_bsa):
             self._StatPub.publish(self._StatData)
             self._MsgPub.publish(self._MsgData)
             self._seq += 1            
@@ -505,8 +505,12 @@ class RMP_IMU(object):
             self._um7_sub = rospy.Subscriber('/um7/data',Imu,self.ExternalImuCallback)
             self._um7_pub = rospy.Publisher('/segway/feedback/ext_imu', Imu, queue_size=10)
             self._um7_data = Imu()
-        if (True == has_segway_bsa):
-            self.bsa = BSA_Packet()
+        
+        try:
+            if "true"==os.environ["SEGWAY_HAS_BSA"]:
+                self.bsa = BSA_Packet()
+        except:
+            pass
     
     def ExternalImuCallback(self, imu_data):
         self._um7_data.header = imu_data.header

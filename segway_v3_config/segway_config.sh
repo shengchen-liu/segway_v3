@@ -4,7 +4,7 @@
 
 # If there is an onboard PC powered by the system this will run the watchdog
 # to make sure it gets gracefully shutdown before the system power cuts out.
-export SEGWAY_POWERS_PC_ONBOARD=false
+export SEGWAY_POWERS_PC_ONBOARD=true
 
 #Default Segway RMP_V3 network 
 export SEGWAY_IP_ADDRESS=10.66.171.5
@@ -16,13 +16,13 @@ export SEGWAY_PARENT_LINK=base_chassis_link
 #Determines if move base should run in balance mode, if false runs in tractor
 export SEGWAY_RUNS_IN_BALANCE_MODE=false
 # Determines if Segway platform is equipped with a BSA almost all are expect the RMP210
-export SEGWAY_HAS_BSA=false
+export SEGWAY_HAS_BSA=true
 
 # Platform name for specific URDF models and configurations; the base platform is
 # used for drivers, sim controllers, etc; the platform name is for special URDF/Sensor
 # configurations. In general they should be the same unless we built you a custom system
-export SEGWAY_BASE_PLATFORM=RMP_210
-export SEGWAY_PLATFORM_NAME=RMP_210
+export SEGWAY_BASE_PLATFORM=RMP_OMNI
+export SEGWAY_PLATFORM_NAME=RMP_OMNI
 
 # Defines the location of the sensors frames and the UI box
 # they all move together for the navigator elite. This is the point at the
@@ -30,8 +30,8 @@ export SEGWAY_PLATFORM_NAME=RMP_210
 export NAVIGATOR_ELITE_XYZ="-0.1801 0 0.060625"
 
 #Only the RMP220 and RMP210 can have caster plates so do not enable them if using another model
-export SEGWAY_HAS_REAR_CASTER=true
-export SEGWAY_HAS_FRONT_CASTER=true
+export SEGWAY_HAS_REAR_CASTER=false
+export SEGWAY_HAS_FRONT_CASTER=false
 
 #Determines if the platform should use 2D or 3D odometry
 export SEGWAY_USE_2D_ODOMETRY=true
@@ -46,31 +46,31 @@ export SEGWAY_USE_GPS_FOR_GLOBAL_LOCALIZATION=false
 # Joystick configurations for onboard joystick
 export SEGWAY_HAS_ONBOARD_JOY=false
 export SEGWAY_JOY_DEV=/dev/input/js0
-export SEGWAY_JOY_MAPPING=xbox360
+export SEGWAY_JOY_MAPPING=extreme3D
 export SEGWAY_JOY_DEADZONE=0.1
 
 # Sets whether the costmaps use 3D voxel grid layer (need a 3D sensor enabled)
 export SEGWAY_USE_VOXEL_GRID=false
 
 # External IMU configuration;
-export SEGWAY_HAS_EXT_IMU=false
-export SEGWAY_HAS_UM7_IMU=false
-export SEGWAY_UM7_DEV="/dev/serial/by-path/pci-0000:00:1a.0-usb-0:1.5:1.0-port0"
-export EXT_IMU_XYZ="0 0 0.33405"
-export EXT_IMU_RPY="0 0 0"
+export SEGWAY_HAS_EXT_IMU=true
+export SEGWAY_HAS_UM7_IMU=true
+export SEGWAY_UM7_DEV="/dev/serial/by-path/pci-0000:00:14.0-usb-0:3:1.0-port0"
+export EXT_IMU_XYZ="-0.25203 0.130 0.0715"
+export EXT_IMU_RPY="3.1415 0 3.1415"
 
 # GPS configuration
-export SEGWAY_HAS_GPS=false
-export SEGWAY_HAS_NEO7=false
-export SEGWAY_NEO7_DEV="/dev/serial/by-path/pci-0000:00:1a.0-usb-0:1.6:1.0-port0"
-export GPS_XYZ="-0.07312445 0 0.38512342"
+export SEGWAY_HAS_GPS=true
+export SEGWAY_HAS_NEO7=true
+export SEGWAY_NEO7_DEV="/dev/serial/by-path/pci-0000:00:14.0-usb-0:4:1.0-port0"
+export GPS_XYZ="0.5 0 0.25409"
 export GPS_RPY="0 0 0"
 
 # 2D scanner configuration for launch files; should change hokuyo
 # to sick if using a SICK LMS1XX
-export SEGWAY_HAS_2D_LASER=false
-export SEGWAY_2D_LASER_NS=hokuyo
-export SEGWAY_2D_LASER_TOPIC=/hokuyo/scan
+export SEGWAY_HAS_2D_LASER=true
+export SEGWAY_2D_LASER_NS=sick
+export SEGWAY_2D_LASER_TOPIC=/sick/scan
 
 export SEGWAY_HAS_HOKUYO=false
 export SEGWAY_HOKUYO_IP=10.66.171.6
@@ -78,10 +78,11 @@ export SEGWAY_HOKUYO_PORT=10940
 export HOKUYO_XYZ="0.35 0 0.1"
 export HOKUYO_RPY="0 0 0"
 
-export SEGWAY_HAS_SICK=false
-export SEGWAY_SICK_IP=10.66.171.8
-export SICK_LMS1XX_XYZ="0 0 1.0"
-export SICK_LMS1XX_RPY="3.1415 0 0"
+export SEGWAY_HAS_SICK_TIM=true
+export SEGWAY_SICK_TIM_IP=10.66.171.8
+export SEGWAY_SICK_TIM_PORT=2112
+export SICK_TIM_XYZ="0.62204 0 0.25409"
+export SICK_TIM_RPY="0 0 0"
 
 # Segway has KINECT
 export SEGWAY_HAS_KINECT=false
