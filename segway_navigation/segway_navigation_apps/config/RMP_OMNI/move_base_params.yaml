@@ -2,7 +2,7 @@
 # http://wiki.ros.org/move_base
 #
 planner_frequency:          0.0     # default: 0.0 Global plan updates on new goal or path blocked only
-controller_frequency:       20.0    # default: 20.0
+controller_frequency:       10.0    # default: 20.0
 planner_patience:           5.0     # default: 5.0
 controller_patience:        10.0    # default: 15.0
 conservative_reset_dist:    3.0     # default: 3.0
@@ -23,10 +23,5 @@ conservative_clear:
   reset_distance: 3.0
 agressive_clear:
   reset_distance: 1.875
-rotate_recovery1:
-  sim_granularity: 0.017
-  frequency: 20.0
-rotate_recovery2:
-  sim_granularity: 0.017
-  frequency: 20.0
+
 

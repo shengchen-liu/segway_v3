@@ -167,9 +167,9 @@ class SegwayMoveBase():
             my_cmd = Twist()
             my_cmd.angular.z = 1.0
             time_to_twist = rospy.Duration(5.0)
-            start_time = rospy.get_rostime()
+            start_time = rospy.get_time()
             r = rospy.Rate(10)
-            while (rospy.get_rostime() - start_time) < time_to_twist:
+            while (rospy.get_time() - start_time) < time_to_twist:
                 self.cmd_vel_pub.publish(my_cmd)
                 r.sleep()
                 
@@ -354,8 +354,7 @@ class SegwayMoveBase():
         rospy.loginfo("Going to (X,Y): (%(1).3f,%(2).3f)"%{"1":goal.target_pose.pose.position.x,"2":goal.target_pose.pose.position.y})
 
         self.n_goals+=1
-        self.goal_timeout = rospy.Duration(self.goal_timeout_sec)
-        self.goal_start_time = rospy.get_rostime()
+        self.goal_start_time = rospy.get_time()
         self.move_base_client.send_goal(goal,done_cb=self._done_moving_cb,feedback_cb=self._feedback_cb)
         delay = rospy.Duration(0.1)
         
@@ -375,9 +374,9 @@ class SegwayMoveBase():
                 rospy.loginfo("Cannot navigate when platform is executing dynamic response")
                 return
             
-            if ((rospy.get_rostime() - self.goal_start_time) > self.goal_timeout):
+            if ((rospy.get_time() - self.goal_start_time) > self.goal_timeout_sec):
                 self.move_base_client.cancel_goal()
-                self.move_base_server.set_aborted(None, "Goal has timed out took longer than %f"%self.goal_timeout)
+                self.move_base_server.set_aborted(None, "Goal has timed out took longer than %f"%self.goal_timeout_sec)
                 rospy.loginfo("Timed out while trying to acheive new goal, cancelling move_base goal.")
                 return
         
@@ -390,7 +389,7 @@ class SegwayMoveBase():
         self.move_base_server.publish_feedback(feedback)
         
     def _preempt_cb(self):
-        self.move_base_client.cancel_goals_at_and_before_time(rospy.get_time())
+        self.move_base_client.cancel_goals_at_and_before_time(rospy.get_rostime())
         rospy.logwarn("Current move base goal cancelled")
         if (self.move_base_server.is_active()):
             if not self.move_base_server.is_new_goal_available():
@@ -487,9 +486,9 @@ class SegwayMoveBase():
         Send the audio command
         """
         r = rospy.Rate(10)
-        start_time = rospy.get_rostime()
-        while ((rospy.get_rostime() - start_time) < 30.0) and (RMP_MODES_DICT[requested] != self.rmp_operational_state):
-            config_cmd.header.stamp = rospy.get_time()
+        start_time = rospy.get_time()
+        while ((rospy.get_time() - start_time) < 30.0) and (RMP_MODES_DICT[requested] != self.rmp_operational_state):
+            config_cmd.header.stamp = rospy.get_rostime()
             config_cmd.gp_cmd = 'GENERAL_PURPOSE_CMD_SET_OPERATIONAL_MODE'
             config_cmd.gp_param = requested
             self.cmd_config_cmd_pub.publish(config_cmd)
@@ -506,9 +505,9 @@ class SegwayMoveBase():
         Send the audio command
         """
         r = rospy.Rate(10)
-        start_time = rospy.get_rostime()
-        while ((rospy.get_rostime() - start_time) < 2.0):
-            config_cmd.header.stamp = rospy.get_time()
+        start_time = rospy.get_time()
+        while ((rospy.get_time() - start_time) < 2.0):
+            config_cmd.header.stamp = rospy.get_rostime()
             config_cmd.gp_cmd = 'GENERAL_PURPOSE_CMD_SET_AUDIO_COMMAND'
             config_cmd.gp_param = RMP_MODES_AUDIO_DICT[requested]
             self.cmd_config_cmd_pub.publish(config_cmd)
@@ -541,7 +540,7 @@ class SegwayMoveBase():
             pose_parts[6] = rot[3]       
         
             current_pose = PoseWithCovarianceStamped()
-            current_pose.header.stamp = rospy.get_time()
+            current_pose.header.stamp = rospy.get_rostime()
             current_pose.header.frame_id = self.global_frame
             current_pose.pose.pose = Pose(Point(pose_parts[0], pose_parts[1], pose_parts[2]), Quaternion(pose_parts[3],pose_parts[4],pose_parts[5],pose_parts[6])) 
         except:
@@ -559,8 +558,8 @@ class SegwayMoveBase():
         
         try:        
             r = rospy.Rate(10)
-            start_time = rospy.get_rostime()
-            while ((rospy.get_rostime() - start_time) < 2.0):
+            start_time = rospy.get_time()
+            while ((rospy.get_time() - start_time) < 2.0):
                 self.cmd_vel_pub.publish(Twist())
                 r.sleep()
         except:

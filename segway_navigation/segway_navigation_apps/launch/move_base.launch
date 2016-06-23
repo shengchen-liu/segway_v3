@@ -11,8 +11,7 @@
         <remap from="cmd_vel" to="/segway/navigation/cmd_vel" />
         
         <param name="base_global_planner" value="global_planner/GlobalPlanner"/>
-        <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" if="$(arg use_dwa)"/>
-        <param name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS" unless="$(arg use_dwa)"/>
+        <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS"/>
         
         <!-- Change the name of the move_base; it is first checked and handled by the client that we're using -->
 		<remap from="move_base/goal" to="move_base_navi/goal" />
@@ -40,9 +39,8 @@
         <remap from="cmd_vel" to="/segway/navigation/cmd_vel" />
         
         <param name="base_global_planner" value="global_planner/GlobalPlanner"/>
-        <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" if="$(arg use_dwa)"/>
-        <param name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS" unless="$(arg use_dwa)"/>
-        
+        <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS"/>
+       
         <!-- Change the name of the move_base; it is first checked and handled by the client that we're using -->
 		<remap from="move_base/goal" to="move_base_navi/goal" />
 		<remap from="move_base/result" to="move_base_navi/result" />
