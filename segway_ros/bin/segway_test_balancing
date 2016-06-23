@@ -7,7 +7,7 @@ dangerous if you do not understand the system dynamics, the operational model an
 the potential hazards to avoid when balancing. This can all be learned from the 
 manual. 
 
-To enter balance (220 only), run this script (rosrun vector_ros segway_test_balancing).
+To enter balance (220 only), run this script (rosrun segway_ros segway_test_balancing).
 
 The machine will start to beep indicating that it is waiting for the balance entry
 criteria to be met. The criteria are:
@@ -75,7 +75,7 @@ arising out of or based upon:
 
  \Platform: Linux/ROS Indigo
 --------------------------------------------------------------------"""
-from from segway.system_defines import *
+from segway.system_defines import *
 from dynamic_reconfigure.client import Client
 from dynamic_reconfigure.msg import Config
 from segway_msgs.msg import *
@@ -85,7 +85,7 @@ class TestBalance(object):
     def __init__(self):
     
         rospy.loginfo("waiting for segway dynamic reconfigure server....")
-        rospy.wait_for_message('/segway/parameter_updates', Config) 
+        rospy.wait_for_message('/segway/segway_driver/parameter_updates', Config) 
     
         rospy.loginfo("Unlocking balance mode")
         client= Client("/segway",timeout=1.0)
