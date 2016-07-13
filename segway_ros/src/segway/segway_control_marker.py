@@ -159,8 +159,7 @@ class SegwayMarkerMenu:
         self.menu_handler.setCheckState( handle, MenuHandler.CHECKED )
         msg = ConfigCmd()
         msg.gp_cmd = 'GENERAL_PURPOSE_CMD_SET_OPERATIONAL_MODE'
-        
-        print handle, self.mode_menu_opt[handle]
+
         if ("Standby" == self.mode_menu_opt[handle]):
             msg.gp_param = STANDBY_REQUEST
         elif ("Tractor" == self.mode_menu_opt[handle]):
