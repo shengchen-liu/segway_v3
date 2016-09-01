@@ -30,8 +30,6 @@ find_package(catkin REQUIRED COMPONENTS ${THIS_PACKAGE_ROS_DEPS})
 #
 find_package(Eigen3)
 if(NOT EIGEN3_FOUND)
-  message(EIGEN3 not found)
-
   # Fallback to cmake_modules
   find_package(cmake_modules REQUIRED)
   find_package(Eigen REQUIRED)
@@ -42,7 +40,6 @@ endif()
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
 link_directories(${catkin_LIBRARY_DIRS} ${EIGEN3_LIBRARY_DIRS})
-message("Assisted telop catkin_LIBRARY_DIRS: " ${catkin_LIBRARY_DIRS})
 
 catkin_package(
   INCLUDE_DIRS include
