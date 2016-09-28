@@ -9,7 +9,7 @@
         <param name="controller_frequency" value="10.0"/>
         <param name="num_th_samples" value="20"/>
         <param name="num_x_samples" value="6" />
-        <param name="diff_drive" value="true" />
+        <param name="diff_drive" value="$(optenv SEGWAY_IS_OMNI false)" />
         <param name="theta_range" value="3.14" />
         <param name="translational_collision_speed" value="0.0"/>
         <param name="rotational_collision_speed" value="1.0" />
