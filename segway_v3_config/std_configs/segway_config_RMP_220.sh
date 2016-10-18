@@ -22,13 +22,13 @@ export SEGWAY_PARENT_LINK=base_chassis_link
 export SEGWAY_RUNS_IN_BALANCE_MODE=false
 
 # Determines if Segway platform is equipped with a BSA almost all are expect the RMP210
-export SEGWAY_HAS_BSA=false
+export SEGWAY_HAS_BSA=true
 
 # Platform name for specific URDF models and configurations; the base platform is
 # used for drivers, sim controllers, etc; the platform name is for special URDF/Sensor
 # configurations. In general they should be the same unless we built you a custom system
-export SEGWAY_BASE_PLATFORM=RMP_210
-export SEGWAY_PLATFORM_NAME=RMP_210
+export SEGWAY_BASE_PLATFORM=RMP_220
+export SEGWAY_PLATFORM_NAME=RMP_220
 export SEGWAY_IS_OMNI=false
 
 # Defines the location of the sensors frames and the UI box
