@@ -66,7 +66,7 @@ class IoEthThread:
             self.conn = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             self.conn.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
             self.conn.setblocking(0)
-            self.conn.bind((os.environ['ROS_IP'],self.remote_address[1]))
+            self.conn.bind(('',self.remote_address[1]))
             self.conn.connect(self.remote_address)
         except:
             try:
