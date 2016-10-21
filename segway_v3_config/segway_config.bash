@@ -46,8 +46,20 @@ export SEGWAY_USE_2D_ODOMETRY=true
 # set to true for onboard odometry
 export SEGWAY_USE_PLATFORM_ODOMETRY=true
 # determines if GPS is used for local or global odometry (requires a GPS data source)
-export SEGWAY_USE_GPS_FOR_LOCAL_ODOM=false
 export SEGWAY_USE_GPS_FOR_GLOBAL_LOCALIZATION=false
+
+#If your IMU does not account for magnetic declination, enter the value for your
+#location here. If you don't know it, see http://www.ngdc.noaa.gov/geomag-web/
+#(make sure to convert the value to radians). This parameter is mandatory.
+export MAGNETIC_DECLINATION=-0.2555162
+
+#Your IMU's yaw, once the magentic_declination_radians value is added to it, should
+#report 0 when facing east. #1.5707963 If it doesn't, enter the offset here. Defaults to 0.
+export IMU_YAW_OFFSET=1.5707963 
+
+#This is the initial GPS coordinates used for simulation
+export LATITUDE_REFERENCE=42.73579709272848
+export LONGITUDE_REFERENCE=-71.59572354334802
 
 # Joystick configurations for onboard joystick
 export SEGWAY_HAS_ONBOARD_JOY=false

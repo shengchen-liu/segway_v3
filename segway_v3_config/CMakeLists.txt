@@ -5,10 +5,8 @@ find_package(catkin REQUIRED)
 
 catkin_package()
 
-catkin_add_env_hooks(50.segway_config
-  SHELLS sh DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
-
-install(PROGRAMS segway_config.sh
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+install(FILES segway_config.bash
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
+catkin_add_env_hooks(50.segway_config SHELLS bash DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
