@@ -27,8 +27,8 @@ export SEGWAY_HAS_BSA=true
 # Platform name for specific URDF models and configurations; the base platform is
 # used for drivers, sim controllers, etc; the platform name is for special URDF/Sensor
 # configurations. In general they should be the same unless we built you a custom system
-export SEGWAY_BASE_PLATFORM=RMP_440
-export SEGWAY_PLATFORM_NAME=RMP_440
+export SEGWAY_BASE_PLATFORM=RMP_220
+export SEGWAY_PLATFORM_NAME=RMP_220
 export SEGWAY_IS_OMNI=false
 
 # Defines the location of the sensors frames and the UI box
@@ -37,8 +37,8 @@ export SEGWAY_IS_OMNI=false
 export NAVIGATOR_ELITE_XYZ="-0.1801 0 0.060625"
 
 #Only the RMP220 and RMP210 can have caster plates so do not enable them if using another model
-export SEGWAY_HAS_REAR_CASTER=false
-export SEGWAY_HAS_FRONT_CASTER=false
+export SEGWAY_HAS_REAR_CASTER=true
+export SEGWAY_HAS_FRONT_CASTER=true
 
 #Determines if the platform should use 2D or 3D odometry
 export SEGWAY_USE_2D_ODOMETRY=true
@@ -46,8 +46,20 @@ export SEGWAY_USE_2D_ODOMETRY=true
 # set to true for onboard odometry
 export SEGWAY_USE_PLATFORM_ODOMETRY=true
 # determines if GPS is used for local or global odometry (requires a GPS data source)
-export SEGWAY_USE_GPS_FOR_LOCAL_ODOM=false
 export SEGWAY_USE_GPS_FOR_GLOBAL_LOCALIZATION=false
+
+#If your IMU does not account for magnetic declination, enter the value for your
+#location here. If you don't know it, see http://www.ngdc.noaa.gov/geomag-web/
+#(make sure to convert the value to radians). This parameter is mandatory.
+export MAGNETIC_DECLINATION=-0.2555162
+
+#Your IMU's yaw, once the magentic_declination_radians value is added to it, should
+#report 0 when facing east. #1.5707963 If it doesn't, enter the offset here. Defaults to 0.
+export IMU_YAW_OFFSET=1.5707963 
+
+#This is the initial GPS coordinates used for simulation
+export LATITUDE_REFERENCE=42.73579709272848
+export LONGITUDE_REFERENCE=-71.59572354334802
 
 # Joystick configurations for onboard joystick
 export SEGWAY_HAS_ONBOARD_JOY=false
@@ -90,11 +102,11 @@ export SEGWAY_LASER1_IP=10.66.171.8
 export SEGWAY_LASER1_PORT=2112
 #Uncomment below and comment line above for hokuyo
 #export SEGWAY_LASER1_PORT=10940 
-export LASER1_XYZ="0.62204 0 0.11991"
+export LASER1_XYZ="0.34394 0 0.11991"
 export LASER1_RPY="0 0 0"
 export LASER1_MAX_RANGE=20.0
 export LASER1_MIN_RANGE=0.01
-export LASER1_PREFIX="base"
+export LASER1_PREFIX="front"
 
 # Laser1 configuration
 export SEGWAY_LASER2_IS_HOKUYO=false
@@ -103,7 +115,7 @@ export SEGWAY_LASER2_IP=10.66.171.9
 export SEGWAY_LASER2_PORT=2112
 #Uncomment below and comment line above for hokuyo
 #export SEGWAY_LASER1_PORT=10940 
-export LASER2_XYZ="-0.62204 0 0.11991"
+export LASER2_XYZ="-0.34394 0 0.11991"
 export LASER2_RPY="0 0 3.1415"
 export LASER2_MAX_RANGE=20.0
 export LASER2_MIN_RANGE=0.01
