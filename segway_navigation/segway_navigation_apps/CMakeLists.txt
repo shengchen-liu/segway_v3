@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(segway_navigation_apps)
 
-find_package(catkin REQUIRED COMPONENTS message_generation roslaunch)
+find_package(catkin REQUIRED COMPONENTS roslaunch)
 
 ## Declare a catkin package
 catkin_package()

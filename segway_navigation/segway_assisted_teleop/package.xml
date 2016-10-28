@@ -1,7 +1,7 @@
 <package>
     <name>segway_assisted_teleop</name>
     <version>0.0.1</version>
-    <description>Node to aid in teleoperation by avoiding obstacles</description>
+    <description> Teleoperation node with obstacle avoidance </description>
 
     <maintainer email="RMP@stanleyinnovation.com">Stanley Innovation, Inc.</maintainer>
     <license>BSD</license>
