@@ -1,4 +1,4 @@
-<package>
+<package format="2">
     <name>si_utils</name>
     <version>0.0.1</version>
     <description>System launch file and environment hooks for various utilities</description>
@@ -10,8 +10,6 @@
 
     <buildtool_depend>catkin</buildtool_depend>
     
-    <build_depend>roslaunch</build_depend>
+    <test_depend>roslaunch</test_depend>
 
-	<export>
-	</export>
 </package>

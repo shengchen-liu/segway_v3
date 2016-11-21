@@ -4,12 +4,10 @@ project(si_utils)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roslaunch)
+find_package(catkin REQUIRED)
 
 ## Declare a catkin package
 catkin_package()
-
-roslaunch_add_file_check(launch)
 
 ## Install ## 
 install(PROGRAMS scripts/timed_roslaunch 
@@ -20,4 +18,7 @@ install(DIRECTORY launch
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
-
+if (CATKIN_ENABLE_TESTING)
+  find_package(roslaunch REQUIRED)
+  roslaunch_add_file_check(launch)
+endif ()

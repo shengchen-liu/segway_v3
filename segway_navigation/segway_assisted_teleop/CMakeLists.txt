@@ -4,19 +4,19 @@ project(segway_assisted_teleop)
 find_package(cmake_modules REQUIRED)
 
 set(THIS_PACKAGE_ROS_DEPS
-  tf
+  actionlib
+  angles
+  base_local_planner
   costmap_2d
+  filters
+  geometry_msgs
+  message_filters
+  move_base_msgs
+  pluginlib
   roscpp
   roslib
-  geometry_msgs
-  move_base_msgs
-  actionlib
-  message_filters
-  base_local_planner
-  angles
-  pluginlib
   sensor_msgs
-  filters
+  tf
 )
 
 find_package(catkin REQUIRED COMPONENTS ${THIS_PACKAGE_ROS_DEPS})
@@ -30,8 +30,7 @@ find_package(catkin REQUIRED COMPONENTS ${THIS_PACKAGE_ROS_DEPS})
 #
 find_package(Eigen3)
 if(NOT EIGEN3_FOUND)
-  # Fallback to cmake_modules
-  find_package(cmake_modules REQUIRED)
+  # Fallback to cmake_modules (already found above)
   find_package(Eigen REQUIRED)
   set(EIGEN3_INCLUDE_DIRS ${EIGEN_INCLUDE_DIRS})
 else()
@@ -42,13 +41,15 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
 link_directories(${catkin_LIBRARY_DIRS} ${EIGEN3_LIBRARY_DIRS})
 
 catkin_package(
-  INCLUDE_DIRS include
   CATKIN_DEPENDS ${THIS_PACKAGE_ROS_DEPS}
-  INCLUDE_DIRS ${EIGEN3_INCLUDE_DIRS}
+  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
 )
 
 add_executable(segway_assisted_teleop src/segway_assisted_teleop.cpp)
 target_link_libraries(segway_assisted_teleop trajectory_planner_ros ${catkin_LIBRARIES})
+
+install(DIRECTORY include/${PROJECT_NAME}/
+        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
 
 install(TARGETS segway_assisted_teleop
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
