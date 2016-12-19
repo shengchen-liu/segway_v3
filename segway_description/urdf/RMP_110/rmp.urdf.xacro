@@ -61,11 +61,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         
         <link name="inertial_collision_link">
 			<inertial>
-				<mass value="36.914402" />
-				<origin xyz="-0.043407 0.000037 0.060079" />
-				<inertia ixx="1.182744"  ixy="0.017957" ixz="-0.077476"
-                         iyx="0.017957"  iyy="0.538664" iyz="0.000018"
-                         izx="-0.077476" izy="0.000018" izz="1.240229" />
+				<mass value="29.756375" />
+				<origin xyz="0.001751 0.000008 0.018544" />
+				<inertia ixx="0.696269"  ixy="0.016133" ixz="0.003232"
+                         iyx="0.016133"  iyy="0.299110" iyz="-0.000004"
+                         izx="-0.077476" izy="-0.000004" izz="0.864394" />
 			</inertial>
             <collision>
 				<geometry>
