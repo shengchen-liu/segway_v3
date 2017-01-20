@@ -59,6 +59,7 @@ from std_msgs.msg import Bool, UInt32
 from math import pow, sqrt
 from system_defines import *
 from visualization_msgs.msg import MarkerArray,Marker
+from math import atan2
 import rospkg
 
 class SegwayMoveBase():
@@ -221,7 +222,24 @@ class SegwayMoveBase():
                 goal = PoseStamped()
                 goal.header.stamp = rospy.get_rostime()
                 goal.header.frame_id = self.global_frame
-                goal.pose = self.waypoints[self.present_waypoint] 
+                
+                if ((True == self.waypoints[self.present_waypoint][0]) and (len(self.waypoints)>1)) :
+                    pos1 = self.waypoints[self.present_waypoint][1]
+                    
+                    if (self.present_waypoint == (len(self.waypoints)-1)):
+                        pos2 = self.waypoints[0][1]
+                    else:
+                        pos2 = self.waypoints[self.present_waypoint+1][1]    
+                    
+                    y2y1= pos2.position.y-pos1.position.y
+                    x2x1= pos2.position.x-pos1.position.x
+                    heading = tf.transformations.quaternion_from_euler(0,0,atan2(y2y1,x2x1))
+                    self.waypoints[self.present_waypoint][1].orientation.x = heading[0]
+                    self.waypoints[self.present_waypoint][1].orientation.y = heading[1]
+                    self.waypoints[self.present_waypoint][1].orientation.z = heading[2]
+                    self.waypoints[self.present_waypoint][1].orientation.w = heading[3]
+                    
+                goal.pose = self.waypoints[self.present_waypoint][1] 
                 self._simple_goal_cb(goal)
                 
             self.marker_array_pub.publish(self.marker_array_msg)
@@ -302,8 +320,8 @@ class SegwayMoveBase():
         
         
     def _add_waypoint(self,point):
-        pose = Pose(point.point,Quaternion(0.0,0.0,0.0,1.0)) 
-        self._append_waypoint_pose(pose)    
+        pose = Pose(point.point,Quaternion(0.0,0.0,0.0,1.0))
+        self._append_waypoint_pose(pose,True)    
 
     def _add_waypoint_pose(self):
         current_pose = self._get_current_pose()
@@ -313,9 +331,9 @@ class SegwayMoveBase():
         else:
             rospy.logerror("Invalid waypoint pose")
     
-    def _append_waypoint_pose(self,pose):
+    def _append_waypoint_pose(self,pose,create_heading=False):
         print pose
-        self.waypoints.append(pose)
+        self.waypoints.append([create_heading,pose])
         marker = Marker()
         marker.header.frame_id = self.global_frame
         marker.id = self.marker_idx
