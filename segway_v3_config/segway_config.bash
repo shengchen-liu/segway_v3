@@ -106,7 +106,9 @@ export LASER1_XYZ="0.62204 0 0.25409"
 export LASER1_RPY="0 0 0"
 export LASER1_MAX_RANGE=20.0
 export LASER1_MIN_RANGE=0.01
-export LASER1_PREFIX="front"
+export LASER1_MAX_ANGLE=2.0
+export LASER1_MIN_ANGLE=-2.0
+export LASER1_PREFIX="base"
 
 # Laser1 configuration
 export SEGWAY_LASER2_IS_HOKUYO=false
@@ -119,6 +121,8 @@ export LASER2_XYZ="-0.62204 0 0.25409"
 export LASER2_RPY="0 0 3.1415"
 export LASER2_MAX_RANGE=20.0
 export LASER2_MIN_RANGE=0.01
+export LASER2_MAX_ANGLE=2.0
+export LASER2_MIN_ANGLE=-2.0
 export LASER2_PREFIX="rear"
 
 # Segway has KINECT
