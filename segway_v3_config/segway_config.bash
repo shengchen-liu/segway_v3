@@ -102,13 +102,13 @@ export SEGWAY_LASER1_IP=10.66.171.8
 export SEGWAY_LASER1_PORT=2112
 #Uncomment below and comment line above for hokuyo
 #export SEGWAY_LASER1_PORT=10940 
-export LASER1_XYZ="0.62204 0 0.25409"
-export LASER1_RPY="0 0 0"
+export LASER1_XYZ="0.66318 0.23664 0.14347"
+export LASER1_RPY="0 0 0.7854"
 export LASER1_MAX_RANGE=20.0
 export LASER1_MIN_RANGE=0.01
-export LASER1_MAX_ANGLE=2.0
-export LASER1_MIN_ANGLE=-2.0
-export LASER1_PREFIX="base"
+export LASER1_MAX_ANGLE=2.35619
+export LASER1_MIN_ANGLE=-2.35619
+export LASER1_PREFIX="front"
 
 # Laser1 configuration
 export SEGWAY_LASER2_IS_HOKUYO=false
@@ -117,12 +117,12 @@ export SEGWAY_LASER2_IP=10.66.171.9
 export SEGWAY_LASER2_PORT=2112
 #Uncomment below and comment line above for hokuyo
 #export SEGWAY_LASER1_PORT=10940 
-export LASER2_XYZ="-0.62204 0 0.25409"
-export LASER2_RPY="0 0 3.1415"
+export LASER2_XYZ="-0.66318 -0.23664 0.14347"
+export LASER2_RPY="0 0 3.927"
 export LASER2_MAX_RANGE=20.0
 export LASER2_MIN_RANGE=0.01
-export LASER2_MAX_ANGLE=2.0
-export LASER2_MIN_ANGLE=-2.0
+export LASER2_MAX_ANGLE=2.35619
+export LASER2_MIN_ANGLE=-2.35619
 export LASER2_PREFIX="rear"
 
 # Segway has KINECT
