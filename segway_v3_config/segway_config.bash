@@ -96,8 +96,8 @@ export SEGWAY_JOY_MAPPING=xbox360
 export SEGWAY_USE_VOXEL_GRID=false
 
 # External IMU configuration;
-export SEGWAY_HAS_EXT_IMU=true
-export SEGWAY_HAS_UM7_IMU=true
+export SEGWAY_HAS_EXT_IMU=false
+export SEGWAY_HAS_UM7_IMU=false
 export SEGWAY_UM7_DEV="/dev/serial/by-path/pci-0000:00:14.0-usb-0:3:1.0-port0"
 export EXT_IMU_XYZ="-0.25203 0.130 0.0715"
 export EXT_IMU_RPY="3.1415 0 3.1415"
