@@ -51,7 +51,7 @@ arising out of or based upon:
 """
 list the platforms supported by this driver
 """
-SUPPORTED_PLATFORMS = ["RMP_220","RMP_210","RMP_440LE","RMP_440SE","RMP_OMNI","RMP_110"]
+SUPPORTED_PLATFORMS = ["RMP_220","RMP_210","RMP_440","RMP_440LE","RMP_440SE","RMP_OMNI","RMP_110"]
 PLATFORM_IDS = dict({
                      0x1:"RMP_440",
                      0x2:"RMP_220"  ,

@@ -29,12 +29,12 @@ export SEGWAY_HAS_BSA=true
 # configurations. In general they should be the same unless we built you a custom system
 export SEGWAY_BASE_PLATFORM=RMP_440
 export SEGWAY_PLATFORM_NAME=RMP_440LE
-export SEGWAY_IS_OMNI=true
+export SEGWAY_IS_OMNI=false
 
 # If the platform is a 440LE define which type
 export SEGWAY_440_LE_STD=false
-export SEGWAY_440_LE_HCG=true
-export SEGWAY_440_LE_ECI=false
+export SEGWAY_440_LE_HCG=false
+export SEGWAY_440_LE_ECI=true
 
 
 if [ "$SEGWAY_440_LE_ECI" = "true" ]; then
@@ -90,7 +90,7 @@ export SEGWAY_JOY_DEADZONE=0.1
 #          Microsoft XBOX360 controller for Windows (possibly newer ones)
 #
 # extreme3D: Logitech Extreme 3D Pro
-export SEGWAY_JOY_MAPPING=extreme3D
+export SEGWAY_JOY_MAPPING=xbox360
 
 # Sets whether the costmaps use 3D voxel grid layer (need a 3D sensor enabled)
 export SEGWAY_USE_VOXEL_GRID=false
@@ -112,8 +112,8 @@ export GPS_RPY="0 0 0"
 # 2D laser scanner configuration. Supports both the
 # SICK TiM lasers and the Hokuyo UST lasers. Maximum
 # of 2 lasers supported by default
-export SEGWAY_HAS_ONE_2D_LASER=true
-export SEGWAY_HAS_SECOND_2D_LASER=true
+export SEGWAY_HAS_ONE_2D_LASER=false
+export SEGWAY_HAS_SECOND_2D_LASER=false
 
 # Laser1 configuration
 export SEGWAY_LASER1_IS_HOKUYO=false
