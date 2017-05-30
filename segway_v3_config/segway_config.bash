@@ -27,9 +27,29 @@ export SEGWAY_HAS_BSA=true
 # Platform name for specific URDF models and configurations; the base platform is
 # used for drivers, sim controllers, etc; the platform name is for special URDF/Sensor
 # configurations. In general they should be the same unless we built you a custom system
-export SEGWAY_BASE_PLATFORM=RMP_OMNI
-export SEGWAY_PLATFORM_NAME=RMP_OMNI
+export SEGWAY_BASE_PLATFORM=RMP_440
+export SEGWAY_PLATFORM_NAME=RMP_440LE
 export SEGWAY_IS_OMNI=true
+
+# If the platform is a 440LE define which type
+export SEGWAY_440_LE_STD=false
+export SEGWAY_440_LE_HCG=true
+export SEGWAY_440_LE_ECI=false
+
+
+if [ "$SEGWAY_440_LE_ECI" = "true" ]; then
+    export SEGWAY_440LE_WHEEL_TRACK=1.002422
+else
+    export SEGWAY_440LE_WHEEL_TRACK=0.66067
+fi
+
+if [ "$SEGWAY_440_LE_STD" = "true" ]; then
+    SEGWAY_440LE_WHEEL_OFFSET=0.08255015
+else
+    export SEGWAY_440LE_WHEEL_OFFSET=-0.08255015
+fi
+
+
 
 # Defines the location of the sensors frames and the UI box
 # they all move together for the navigator elite. This is the point at the
