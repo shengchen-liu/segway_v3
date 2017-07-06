@@ -29,7 +29,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     <xacro:include filename="$(find segway_description)/urdf/sensors/hokuyo_ust20lx.urdf.xacro"/>
     <xacro:include filename="$(find segway_description)/urdf/sensors/velodyne_vlp16.urdf.xacro"/>
     <xacro:include filename="$(find segway_description)/urdf/sensors/pgr_flea3.urdf.xacro"/>
-
+    <xacro:include filename="$(find segway_description)/urdf/sensors/garmin_18x_lvc_gps.urdf.xacro"/>
+    
     <property name="M_PI" value="3.14159"/>
     
     <xacro:macro name="segway_accessories">
@@ -59,26 +60,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 
         <!--GPS Link-->
         <xacro:if value="$(optenv SEGWAY_HAS_GPS false)">
-            <link name="gps_frame"/>
-            <joint name="gps_joint" type="fixed">
-                <origin xyz="$(optenv GPS_XYZ -0.1189 0 0.34665)" rpy="$(optenv GPS_RPY 0 0 0)" />
-                <parent link="$(optenv SEGWAY_PARENT_LINK base_chassis_link)" />
-                <child link="gps_frame" />
-            </joint>
-            <gazebo>
-                <plugin name="gps_controller" filename="libhector_gazebo_ros_gps.so">
-                    <alwaysOn>1</alwaysOn>
-                    <updateRate>40</updateRate>
-                    <bodyName>gps_frame</bodyName>
-                    <topicName>/segway/feedback/gps/fix_2d</topicName>
-                    <velocityTopicName>/segway/feedback/gps/vel</velocityTopicName>
-                    <referenceLatitude>40.712784</referenceLatitude>
-                    <referenceLongitude>-74.005941</referenceLongitude>
-                    <referenceHeading>0</referenceHeading>
-                    <referenceAltitude>0</referenceAltitude>
-                    <drift>0.0001 0.0001 0.0001</drift>
-                </plugin>
-            </gazebo>
+            <xacro:garmin_18x_lvc_gps parent="$(optenv SEGWAY_PARENT_LINK base_chassis_link)">
+                <origin xyz="$(optenv GPS_XYZ 0 0 1.0)" rpy="$(optenv GPS_RPY 0 0 3.1416)" />
+            </xacro:garmin_18x_lvc_gps>
         </xacro:if>
         
         <!-- RGBD Sensor -->

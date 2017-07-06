@@ -71,6 +71,7 @@ class SegwayMoveBase():
         self.continue_execution = True
         self.segway_battery_low = False
         self.rmp_issued_dyn_rsp = False
+        self.waypoint_is_executing = False
         self.is_sim = rospy.get_param("~sim", False)
         self.using_amcl = rospy.get_param("~using_amcl", False)
         self.global_frame = rospy.get_param("~global_frame", 'odom')
@@ -78,12 +79,12 @@ class SegwayMoveBase():
         self.goal_timeout_sec = rospy.get_param("~goal_timeout_sec", 300)
         self.initial_state = rospy.get_param("~platform_mode", "tractor")
         self.load_waypoints = rospy.get_param("~load_waypoints", False)
-        self.waypoint_dwell_s= rospy.get_param("~waypoints_dwell_time", 5.0)
+        self.waypoint_dwell_s= rospy.get_param("~waypoints_dwell_time", 0.0)
         
-        self.marker_array_msg = MarkerArray()
-        self.max_markers = 100
-        self._init_markers()
+        self.max_markers = 20
         self.marker_array_pub = rospy.Publisher('/segway/waypoints',MarkerArray,queue_size=10)
+        self._init_markers()
+        
         
 
         
@@ -130,13 +131,12 @@ class SegwayMoveBase():
         """
         Initialize subscribers
         """
-        rospy.Subscriber("/segway/feedback/aux_power", AuxPower, self._handle_low_aux_power)
+        #rospy.Subscriber("/segway/feedback/aux_power", AuxPower, self._handle_low_aux_power)
         rospy.Subscriber("/segway/feedback/status", Status, self._handle_status)
         rospy.Subscriber("/segway/feedback/propulsion", Propulsion, self._handle_low_propulsion_power)
         rospy.Subscriber("/move_base_simple/goal", PoseStamped,  self._simple_goal_cb)
-        rospy.Subscriber('/segway/teleop/abort_navigation',Bool,self._shutdown)
+        rospy.Subscriber('/segway/abort_navigation',Bool,self._shutdown)
         rospy.Subscriber('/clicked_point',PointStamped,self._add_waypoint)
-        rospy.Subscriber('/segway/teleop/record_pose',Bool,self._add_waypoint_pose)
         rospy.Subscriber('/segway/waypoint_cmd',UInt32,self._process_waypoint_cmd)
         self.simple_goal_pub = rospy.Publisher('/segway_move_base/goal', MoveBaseActionGoal, queue_size=10)
         self.new_goal = MoveBaseActionGoal()
@@ -210,7 +210,7 @@ class SegwayMoveBase():
         self.move_base_server.start()
         
         rospy.loginfo("Segway move base server started")
-        self.waypoint_is_executing = False
+        
         self._run_waypoints()
 
     def _run_waypoints(self):
@@ -246,6 +246,7 @@ class SegwayMoveBase():
             r.sleep()
 
     def _init_markers(self):
+        self.marker_array_msg = MarkerArray()
         self.marker_idx = 0
         for i in range(self.max_markers):
             marker = Marker()
@@ -263,37 +264,51 @@ class SegwayMoveBase():
             marker.scale.z = 0.1
             marker.frame_locked = False
             marker.ns = "Goal-%u"%i
-            self.marker_array_msg.markers.append(marker)            
+            self.marker_array_msg.markers.append(marker)
+            self.marker_idx+=1
+        self.marker_idx = 0
+        self.marker_array_pub.publish(self.marker_array_msg)            
 
     def _process_waypoint_cmd(self,cmd):
         cmd = cmd.data
-        rospy.loginfo("cmd rcvd %u"%cmd)
         if (1<<0 == cmd):
-            self._add_waypoint_pose()
+            self._add_waypoint_pose(True)
+            rospy.loginfo("User added waypoint to waypoint record")
         elif (1<<1 == cmd):
             self.run_waypoints = True
+            rospy.loginfo("User commanded waypoint record to run")
         elif (1<<2 == cmd):
             self.run_waypoints = False
             if (True == self.waypoint_is_executing):
                 self.move_base_client.cancel_goal()
                 self.move_base_server.set_aborted(None, "User stopped waypoints")
-                rospy.loginfo("User commanded waypoint record to stop")
+            rospy.loginfo("User commanded waypoint record to stop")
         elif (1<<3 == cmd):
             self.run_waypoints = False
             self.present_waypoint = 0
             if (True == self.waypoint_is_executing):
                 self.move_base_client.cancel_goal()
                 self.move_base_server.set_aborted(None, "User reset waypoint record")
-                rospy.loginfo("User commanded waypoint record to reset")
+            rospy.loginfo("User commanded waypoint record to reset")
             for i in range(self.max_markers):
                 self.marker_array_msg.markers[i].color.r = 1.0
                 self.marker_array_msg.markers[i].color.g = 0.0
         elif (1<<4 == cmd):
+            self.run_waypoints = False
+            if (True == self.waypoint_is_executing):
+                self.move_base_client.cancel_goal()
+                self.move_base_server.set_aborted(None, "User cleared waypoint record")
+            rospy.loginfo("User commanded waypoint record to clear")
             self.waypoints = []
             self._init_markers()
             self.present_waypoint = 0
             
         elif (1<<5 == cmd):
+            self.run_waypoints = False
+            if (True == self.waypoint_is_executing):
+                self.move_base_client.cancel_goal()
+                self.move_base_server.set_aborted(None, "User loaded new waypoint record")
+            rospy.loginfo("User commanded to load saved waypoint record")
             self.waypoints = []
             self._init_markers()
             self.present_waypoint = 0
@@ -304,26 +319,31 @@ class SegwayMoveBase():
                 pose = Pose(Point(goal[0], goal[1], goal[2]), Quaternion(goal[3],goal[4],goal[5],goal[6]))
                 self._append_waypoint_pose(pose)
             goalfile.close()
+            self.marker_array_pub.publish(self.marker_array_msg)
         elif (1<<6 == cmd):
             goalfile = open(self.goals_filename,'w')
-            for pose in self.waypoints:
-                goal  = "%.3f,"%pose.position.x
-                goal += "%.3f,"%pose.position.y
-                goal += "%.3f,"%pose.position.z
-                goal += "%.3f,"%pose.orientation.x
-                goal += "%.3f,"%pose.orientation.y
-                goal += "%.3f,"%pose.orientation.z
-                goal += "%.3f\n"%pose.orientation.w
-                goalfile.write(goal)
-            goalfile.close()
-            rospy.loginfo("Waypoint Record Saved: %s"%self.goals_filename)                
+            
+            if (len(self.waypoints) > 0):
+                for zz in self.waypoints:
+                    pose = zz[1]
+                    goal  = "%.3f,"%pose.position.x
+                    goal += "%.3f,"%pose.position.y
+                    goal += "%.3f,"%pose.position.z
+                    goal += "%.3f,"%pose.orientation.x
+                    goal += "%.3f,"%pose.orientation.y
+                    goal += "%.3f,"%pose.orientation.z
+                    goal += "%.3f\n"%pose.orientation.w
+                    goalfile.write(goal)
+                goalfile.close()
+                rospy.loginfo("User commanded to save waypoint record")
+                rospy.loginfo("Waypoint Record Saved: %s"%self.goals_filename)                
         
         
     def _add_waypoint(self,point):
         pose = Pose(point.point,Quaternion(0.0,0.0,0.0,1.0))
         self._append_waypoint_pose(pose,True)    
 
-    def _add_waypoint_pose(self):
+    def _add_waypoint_pose(self,msg):
         current_pose = self._get_current_pose()
         
         if (None != current_pose):
@@ -442,6 +462,14 @@ class SegwayMoveBase():
             self.marker_array_msg.markers[self.present_waypoint].color.g = 1.0
             self.marker_array_msg.markers[self.present_waypoint].color.r = 0.0
             self.present_waypoint+=1
+            if (self.present_waypoint >= len(self.waypoints)):
+                self.present_way_point = 0
+                for i in range(self.max_markers):
+                    self.marker_array_msg.markers[i].color.r = 1.0
+                    self.marker_array_msg.markers[i].color.g = 0.0
+                self.marker_array_pub.publish(self.marker_array_msg) 
+                rospy.sleep(3.0)
+                
             self.waypoint_is_executing = False
 
             sleep_time = self.waypoint_dwell_s

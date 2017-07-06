@@ -49,6 +49,8 @@ else
     export SEGWAY_440LE_WHEEL_OFFSET=-0.08255015
 fi
 
+export HAS_SEGWAY_440_NAVE_PACKAGE=true
+
 
 
 # Defines the location of the sensors frames and the UI box
@@ -96,17 +98,17 @@ export SEGWAY_JOY_MAPPING=xbox360
 export SEGWAY_USE_VOXEL_GRID=false
 
 # External IMU configuration;
-export SEGWAY_HAS_EXT_IMU=false
-export SEGWAY_HAS_UM7_IMU=false
+export SEGWAY_HAS_EXT_IMU=true
+export SEGWAY_HAS_UM7_IMU=true
 export SEGWAY_UM7_DEV="/dev/serial/by-path/pci-0000:00:14.0-usb-0:3:1.0-port0"
-export EXT_IMU_XYZ="-0.25203 0.130 0.0715"
-export EXT_IMU_RPY="3.1415 0 3.1415"
+export EXT_IMU_XYZ="-0.2397 -0.1154 0.1899"
+export EXT_IMU_RPY="0 0 3.1415"
 
 # GPS configuration
-export SEGWAY_HAS_GPS=false
+export SEGWAY_HAS_GPS=true
 export SEGWAY_HAS_NEO7=false
 export SEGWAY_NEO7_DEV="/dev/serial/by-path/pci-0000:00:14.0-usb-0:4:1.0-port0"
-export GPS_XYZ="0.5 0 0.25409"
+export GPS_XYZ="0.3407 0.2585 0.2870"
 export GPS_RPY="0 0 0"
 
 # 2D laser scanner configuration. Supports both the
@@ -153,15 +155,16 @@ export RGBD_SENSOR_XYZ="0 0 1.0"
 export RGBD_SENSOR_RPY="0 0 0"
 
 # Segway has VLP16
-export SEGWAY_HAS_VLP16=false
-export SEGWAY_VLP16_IP=192.168.1.201
-export SEGWAY_VLP16_PORT=2368
-export VLP16_XYZ="0.0254 0 0.42760744"
+export SEGWAY_HAS_VLP16=true
+export SEGWAY_VLP16_IP=10.66.171.10
+export SEGWAY_VLP16_PORT=4194
+export VLP16_XYZ="0 0 0.42760744"
 export VLP16_RPY="0 0 0"
 
 # Machine vision
-export SEGWAY_HAS_FLEA3=false
-export SEGWAY_FLEA3_SN='14472220'
+export SEGWAY_HAS_FLEA3=true
+export SEGWAY_FLEA3_SN='14434286'
 export SEGWAY_FLEA3_IS_CALIBRATED=false
-export FLEA3_XYZ="0.0518 0 0.35508750"
-export FLEA3_RPY="0 0 0"
+export FLEA3_XYZ="0.3826 0.2268 0.2680"
+export FLEA3_RPY="3.1415 0 0"
+export FLIP_FLEA3_IMAGE=true
