@@ -158,6 +158,10 @@ export RGBD_SENSOR_RPY="0 0 0"
 export SEGWAY_HAS_VLP16=true
 export SEGWAY_VLP16_IP=10.66.171.10
 export SEGWAY_VLP16_PORT=4194
+#these are the vertical range of the point cloud to convert
+#to a laser scan relative to the ground plane
+export VLP16_SCAN_MIN_HEIGHT=0.12760744
+export VLP16_SCAN_MAX_HEIGHT=0.72760744
 export VLP16_XYZ="0 0 0.42760744"
 export VLP16_RPY="0 0 0"
 

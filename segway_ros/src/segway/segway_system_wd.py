@@ -82,7 +82,7 @@ class SegwayWatchdog:
             if (0x8756BAEB == shutdwn_cmd):
                 rospy.logerr("Platform signaled shutdown, need to shutdown the onboard PC")
                 self.Close()
-                os.system("shutdown now -h")
+                os.system("sudo shutdown now -h")
                 sys.exit(0)
 
     def Close(self):
