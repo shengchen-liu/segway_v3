@@ -27,9 +27,9 @@ export SEGWAY_HAS_BSA=true
 # Platform name for specific URDF models and configurations; the base platform is
 # used for drivers, sim controllers, etc; the platform name is for special URDF/Sensor
 # configurations. In general they should be the same unless we built you a custom system
-export SEGWAY_BASE_PLATFORM=RMP_440
-export SEGWAY_PLATFORM_NAME=RMP_440LE
-export SEGWAY_IS_OMNI=false
+export SEGWAY_BASE_PLATFORM=RMP_OMNI
+export SEGWAY_PLATFORM_NAME=RMP_OMNI
+export SEGWAY_IS_OMNI=true
 
 # If the platform is a 440LE define which type
 export SEGWAY_440_LE_STD=false
@@ -92,7 +92,7 @@ export SEGWAY_JOY_DEADZONE=0.1
 #          Microsoft XBOX360 controller for Windows (possibly newer ones)
 #
 # extreme3D: Logitech Extreme 3D Pro
-export SEGWAY_JOY_MAPPING=xbox360
+export SEGWAY_JOY_MAPPING=extreme3D
 
 # Sets whether the costmaps use 3D voxel grid layer (need a 3D sensor enabled)
 export SEGWAY_USE_VOXEL_GRID=false
@@ -100,22 +100,22 @@ export SEGWAY_USE_VOXEL_GRID=false
 # External IMU configuration;
 export SEGWAY_HAS_EXT_IMU=true
 export SEGWAY_HAS_UM7_IMU=true
-export SEGWAY_UM7_DEV="/dev/serial/by-path/pci-0000:00:14.0-usb-0:3:1.0-port0"
-export EXT_IMU_XYZ="-0.2397 -0.1154 0.1899"
-export EXT_IMU_RPY="0 0 3.1415"
+export SEGWAY_UM7_DEV="/dev/serial/by-path/pci-0000:00:14.0-usb-0:2:1.0-port0"
+export EXT_IMU_XYZ="-0.25203 0.130 0.0715"
+export EXT_IMU_RPY="3.1415 0 3.1415"
 
 # GPS configuration
-export SEGWAY_HAS_GPS=true
+export SEGWAY_HAS_GPS=false
 export SEGWAY_HAS_NEO7=false
 export SEGWAY_NEO7_DEV="/dev/serial/by-path/pci-0000:00:14.0-usb-0:4:1.0-port0"
-export GPS_XYZ="0.3407 0.2585 0.2870"
+export GPS_XYZ="0.5 0 0.25409"
 export GPS_RPY="0 0 0"
 
 # 2D laser scanner configuration. Supports both the
 # SICK TiM lasers and the Hokuyo UST lasers. Maximum
 # of 2 lasers supported by default
-export SEGWAY_HAS_ONE_2D_LASER=false
-export SEGWAY_HAS_SECOND_2D_LASER=false
+export SEGWAY_HAS_ONE_2D_LASER=true
+export SEGWAY_HAS_SECOND_2D_LASER=true
 
 # Laser1 configuration
 export SEGWAY_LASER1_IS_HOKUYO=false
@@ -132,7 +132,7 @@ export LASER1_MAX_ANGLE=2.35619
 export LASER1_MIN_ANGLE=-2.35619
 export LASER1_PREFIX="front"
 
-# Laser1 configuration
+# Laser2 configuration
 export SEGWAY_LASER2_IS_HOKUYO=false
 export SEGWAY_LASER2_IS_SICK_TIM=true
 export SEGWAY_LASER2_IP=10.66.171.9
@@ -155,7 +155,7 @@ export RGBD_SENSOR_XYZ="0 0 1.0"
 export RGBD_SENSOR_RPY="0 0 0"
 
 # Segway has VLP16
-export SEGWAY_HAS_VLP16=true
+export SEGWAY_HAS_VLP16=false
 export SEGWAY_VLP16_IP=10.66.171.10
 export SEGWAY_VLP16_PORT=4194
 #these are the vertical range of the point cloud to convert
@@ -166,9 +166,9 @@ export VLP16_XYZ="0 0 0.42760744"
 export VLP16_RPY="0 0 0"
 
 # Machine vision
-export SEGWAY_HAS_FLEA3=true
+export SEGWAY_HAS_FLEA3=false
 export SEGWAY_FLEA3_SN='14434286'
 export SEGWAY_FLEA3_IS_CALIBRATED=false
 export FLEA3_XYZ="0.3826 0.2268 0.2680"
 export FLEA3_RPY="3.1415 0 0"
-export FLIP_FLEA3_IMAGE=true
+export FLIP_FLEA3_IMAGE=false
