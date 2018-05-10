@@ -214,8 +214,8 @@ class SegwayDriver:
         Ensure that the platform is the right one, we don't want to allow the wrong platform because
         some things depend on knowing which platform is operating
         """
-        if (self.platform != PLATFORM_IDS[(self.rmp_data.status.platform_identifier & 0x1F)]):
-            rospy.logerr("Platform ID is not correct!!! Platform reports %(1)s, user set %(2)s..."%{"1":PLATFORM_IDS[(self.rmp_data.status.platform_identifier & 0x1F)],"2":self.platform} )
+        if (self.platform != PLATFORM_IDS[(self.rmp_data.status.platform_identifier & 0x0F)]):
+            rospy.logerr("Platform ID is not correct!!! Platform reports %(1)s, user set %(2)s..."%{"1":PLATFORM_IDS[(self.rmp_data.status.platform_identifier & 0x0F)],"2":self.platform} )
             self.__del__()
             return
         
