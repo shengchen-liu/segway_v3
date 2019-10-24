@@ -156,12 +156,14 @@ class SegwayTeleop:
         for i in range(NUMBER_OF_MOMENTARY_INPUTS):
             inputs_for_req = self.ctrl_map['momentary'][i]
             for item in inputs_for_req:
+                # print item
                 if item['is_button']:
                     if item['set_val'] == joyMessage.buttons[item['index']]:
                         raw_button_states[i] &= True
                     else:
                         raw_button_states[i] = False
                 else:
+                    # print joyMessage
                     temp = joyMessage.axes[item['index']]
                     if (item['invert_axis']):
                         temp *= -1.0

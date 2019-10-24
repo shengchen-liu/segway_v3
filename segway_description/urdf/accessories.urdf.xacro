@@ -108,7 +108,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         <!-- Velodyne VLP-16 Sensor -->
         <xacro:if value="$(optenv SEGWAY_HAS_VLP16 false)">
             <xacro:velodyne_vlp16 parent="$(optenv SEGWAY_PARENT_LINK base_chassis_link)">
-                <origin xyz="$(optenv VLP16_XYZ 0 0 0.39991)" rpy="$(optenv VLP16_RPY 0 0 0)" />
+                <origin xyz="$(optenv VLP16_XYZ 0 0 0.42760744)" rpy="$(optenv VLP16_RPY 0 0 0)" />
             </xacro:velodyne_vlp16>
         </xacro:if>
 

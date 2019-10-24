@@ -9,7 +9,7 @@
 export SEGWAY_POWERS_PC_ONBOARD=true
 
 #Default Segway RMP_V3 network 
-export SEGWAY_IP_ADDRESS=10.66.171.5
+export SEGWAY_IP_ADDRESS=192.168.0.40
 export SEGWAY_IP_PORT_NUM=8080
 
 # The reference frame for all the accessories and sensors
@@ -27,14 +27,14 @@ export SEGWAY_HAS_BSA=true
 # Platform name for specific URDF models and configurations; the base platform is
 # used for drivers, sim controllers, etc; the platform name is for special URDF/Sensor
 # configurations. In general they should be the same unless we built you a custom system
-export SEGWAY_BASE_PLATFORM=RMP_440
-export SEGWAY_PLATFORM_NAME=RMP_440LE
+export SEGWAY_BASE_PLATFORM=RMP_220
+export SEGWAY_PLATFORM_NAME=RMP_220
 export SEGWAY_IS_OMNI=false
 
 # If the platform is a 440LE define which type
 export SEGWAY_440_LE_STD=false
 export SEGWAY_440_LE_HCG=false
-export SEGWAY_440_LE_ECI=true
+export SEGWAY_440_LE_ECI=false
 
 
 if [ "$SEGWAY_440_LE_ECI" = "true" ]; then
@@ -59,14 +59,14 @@ export HAS_SEGWAY_440_NAVE_PACKAGE=true
 export NAVIGATOR_ELITE_XYZ="-0.1801 0 0.060625"
 
 #Only the RMP220 and RMP210 can have caster plates so do not enable them if using another model
-export SEGWAY_HAS_REAR_CASTER=false
-export SEGWAY_HAS_FRONT_CASTER=false
+export SEGWAY_HAS_REAR_CASTER=true
+export SEGWAY_HAS_FRONT_CASTER=true
 
 #Determines if the platform should use 2D or 3D odometry
 export SEGWAY_USE_2D_ODOMETRY=true
 # Determines if we should use robot_localization EKF or the onboard odometry;
 # set to true for onboard odometry
-export SEGWAY_USE_PLATFORM_ODOMETRY=true
+export SEGWAY_USE_PLATFORM_ODOMETRY=false
 # determines if GPS is used for local or global odometry (requires a GPS data source)
 export SEGWAY_USE_GPS_FOR_GLOBAL_LOCALIZATION=false
 
@@ -84,7 +84,7 @@ export LATITUDE_REFERENCE=42.73579709272848
 export LONGITUDE_REFERENCE=-71.59572354334802
 
 # Joystick configurations for onboard joystick
-export SEGWAY_HAS_ONBOARD_JOY=false
+export SEGWAY_HAS_ONBOARD_JOY=true
 export SEGWAY_JOY_DEV=/dev/input/js0
 export SEGWAY_JOY_DEADZONE=0.1
 # Supported joystick types:
@@ -155,14 +155,14 @@ export RGBD_SENSOR_XYZ="0 0 1.0"
 export RGBD_SENSOR_RPY="0 0 0"
 
 # Segway has VLP16
-export SEGWAY_HAS_VLP16=false
-export SEGWAY_VLP16_IP=10.66.171.10
+export SEGWAY_HAS_VLP16=true
+export SEGWAY_VLP16_IP=192.168.0.201
 export SEGWAY_VLP16_PORT=4194
 #these are the vertical range of the point cloud to convert
 #to a laser scan relative to the ground plane
 export VLP16_SCAN_MIN_HEIGHT=0.12760744
 export VLP16_SCAN_MAX_HEIGHT=0.72760744
-export VLP16_XYZ="0 0 0.42760744"
+export VLP16_XYZ="0 0 0.65"
 export VLP16_RPY="0 0 0"
 
 # Machine vision

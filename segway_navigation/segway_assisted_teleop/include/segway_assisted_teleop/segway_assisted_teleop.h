@@ -43,6 +43,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 #include <Eigen/Core>
+#include "tf/tf.h"
+#include "tf/transform_listener.h"
 
 namespace assisted_teleop {
   class AssistedTeleop {
